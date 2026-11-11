@@ -46,14 +46,23 @@ objects retain unknown optional keys during serialization.
 Events are ordered by gameTimeMs, then recordedAtEpochMs, then stable event ID.
 This produces deterministic order when multiple events share the same match time.
 
+## Cooldown mechanics data
+
+| Field | Type | Meaning | Constraint |
+|---|---|---|---|
+| gameVersionId | String | Exact game data version | Nonblank; no cross-version fallback |
+| abilityId | String | Stable ability key | Nonblank |
+| durationMs | Int64 | Configured cooldown | >= 0 |
+| provenance | DataProvenance | Source/review trail | Required |
+| schemaVersion | Int32 | Mechanics record schema | >= 1 |
+
+A resolver returns unavailable for unknown game version or missing exact
+version/ability definitions. It must never guess or use hard-coded defaults.
+See docs/GAME_MECHANICS_DATA.md.
+
 ## Other fields
 
 | Field | Type | Meaning | Constraint |
 |---|---|---|---|
-| gameVersionId | String | Patch/data snapshot | Explicit or unknown |
 | durationMs | Int64 | Configured cooldown | >= 0 |
 | readyAtGameTimeMs | Int64 | Estimated ready time | >= trigger time |
-
-Cooldown definitions and estimates are versioned separately from match event
-contracts. Missing or mismatched definitions must produce UNAVAILABLE, never a
-guessed duration.
