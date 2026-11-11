@@ -3,7 +3,8 @@
 ## Module map
 
 MIP keeps product rules independent from Android APIs. Android is the first host,
-but the shared source sets are Kotlin Multiplatform commonMain code.
+but the shared source sets are Kotlin Multiplatform commonMain code with Android
+and JVM targets.
 
 | Module | Responsibility | May depend on |
 |---|---|---|
@@ -35,17 +36,19 @@ interfaces in platform/data modules. UI code must not access Room or persistence
 records directly. The app module is the composition root that wires adapters to
 domain-facing consumers.
 
-## Shared-core guard
+## Shared-core verification
 
 Run:
 
 ~~~sh
 ./gradlew verifySharedCoreNoAndroidImports
+./gradlew :shared:domain:compileKotlinJvm :shared:contracts:compileKotlinJvm :shared:engine:compileKotlinJvm
 ~~~
 
 The root Gradle task scans Kotlin files under shared/ and fails if a source
 file imports android.* or androidx.*. Android module preBuild tasks depend on
-this guard, so the check runs as part of an Android build.
+this guard, so the check runs as part of an Android build. The JVM targets allow
+the shared modules to compile independently of the Android toolchain.
 
 ## Persistence boundary
 
