@@ -8,12 +8,8 @@ kotlin {
     androidTarget()
     jvm()
     sourceSets {
-        commonMain.dependencies {
-            implementation(libs.kotlinx.serialization.json)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
+        commonMain.dependencies { implementation(libs.kotlinx.serialization.json) }
+        commonTest.dependencies { implementation(libs.kotlin.test) }
     }
 }
 
