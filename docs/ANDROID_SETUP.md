@@ -32,20 +32,28 @@ machine-specific local.properties file untracked.
 
 From the repository root:
 
-~~~sh
+```sh
 ./gradlew --version
 ./gradlew verifySharedCoreNoAndroidImports
 ./gradlew :shared:domain:compileKotlinJvm :shared:contracts:compileKotlinJvm :shared:engine:compileKotlinJvm
 ./gradlew assembleDebug
 ./gradlew :apps:android:lintDebug
 ./gradlew :apps:android:testDebugUnitTest
-~~~
+```
+
+To run the complete CI-equivalent verification locally:
+
+```sh
+./gradlew --no-daemon verifySharedCoreNoAndroidImports \
+  :shared:domain:allTests :shared:contracts:allTests :shared:engine:allTests \
+  :apps:android:testDebugUnitTest :apps:android:lintDebug assembleDebug
+```
 
 To install on a connected device or running emulator:
 
-~~~sh
+```sh
 ./gradlew :apps:android:installDebug
-~~~
+```
 
 The first build downloads the pinned Gradle distribution and Android/Compose
 dependencies. An internet connection is therefore required for initial setup.
@@ -57,3 +65,6 @@ no game integration, overlay, screen capture, OCR, accessibility automation,
 input automation, process-memory inspection, or packet inspection. The home
 screen is a neutral entry point; match features will be implemented in their
 separately scoped issues and must follow the policy boundary.
+
+See [Continuous integration](CI.md) for workflow behavior and branch-protection
+requirements.
