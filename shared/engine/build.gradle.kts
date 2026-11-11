@@ -1,4 +1,8 @@
-plugins { alias(libs.plugins.android.library); alias(libs.plugins.kotlin.multiplatform) }
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+}
+
 kotlin {
     androidTarget()
     jvm()
@@ -7,6 +11,12 @@ kotlin {
             implementation(project(":shared:domain"))
             implementation(project(":shared:contracts"))
         }
+        commonTest.dependencies { implementation(libs.kotlin.test) }
     }
 }
-android { namespace = "com.kiisafezone.mip.shared.engine"; compileSdk = 36; defaultConfig { minSdk = 26 } }
+
+android {
+    namespace = "com.kiisafezone.mip.shared.engine"
+    compileSdk = 36
+    defaultConfig { minSdk = 26 }
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "gameVersionId": "synthetic-1",
+  "definitions": [
+    {
+      "abilityId": "synthetic-ability-a",
+      "durationMs": 12345,
+      "provenance": {
+        "sourceKind": "SYNTHETIC_FIXTURE",
+        "sourceReference": "fixtures/synthetic-cooldowns.json",
+        "notes": "Invented test fixture. Not copied from protected game assets, client files, or live game data."
+      }
+    }
+  ]
+}
