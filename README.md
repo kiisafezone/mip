@@ -22,6 +22,15 @@ docs/               product, technical, architecture, policy, and sprint documen
 .github/            issue templates and CI workflows
 ```
 
+## Android build
+
+See [Android setup and build instructions](docs/ANDROID_SETUP.md). With JDK 17
+and Android SDK Platform 36 installed, run:
+
+```sh
+./gradlew assembleDebug
+```
+
 ## Sprint 0
 See [Sprint 0 plan](docs/sprint-0/SPRINT_0.md) and the GitHub issue tracker.
 
