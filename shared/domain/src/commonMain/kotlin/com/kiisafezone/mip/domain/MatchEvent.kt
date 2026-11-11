@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.JsonPrimitive
 
 @JvmInline
 @Serializable
@@ -77,7 +77,7 @@ fun MatchEvent.validateInitialPayload(): PayloadValidationResult {
         MatchEventTypes.TACTICAL_NOTE -> "text"
         else -> null // HERO_DIED has no mandatory payload fields in v1.
     }
-    val value = requiredKey?.let { payload[it]?.jsonPrimitive?.contentOrNull }
+    val value = requiredKey?.let { (payload[it] as? JsonPrimitive)?.contentOrNull }
     val errors = if (requiredKey != null && value.isNullOrBlank()) {
         listOf("Payload field '$requiredKey' is required for event type '$type'.")
     } else emptyList()
