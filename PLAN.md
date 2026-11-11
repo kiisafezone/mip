@@ -71,9 +71,10 @@ Record the answer verbatim. Do not convert a generic "yes" into evidence of lear
 
 **Fail — simplify and retest before any H2 work:** either:
 - Fewer than 3 of 5 participants complete at least 3 match records; or
-- Median capture time across completed sessions exceeds 5 minutes.
+- Median first-time capture duration exceeds 5 minutes; or
+- Median repeat capture duration exceeds 5 minutes.
 
-Report first-time and repeat medians separately. If first-time median exceeds 5 minutes, treat onboarding as a usability failure even if repeat use is faster.
+Report first-time and repeat medians separately. This prevents a fast repeat flow from hiding a first-time onboarding failure. A pass requires a repeat median under 3 minutes and a first-time median no greater than 5 minutes.
 
 **Inconclusive / revise:** results meet neither the pass nor failure definition—for example, capture is quick but voluntary return is below 3 of 5. Investigate the observed friction or lack of recurring motivation, revise the flow or test design, and run another H1 test. Do not advance to H2 on an inconclusive result.
 
