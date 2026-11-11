@@ -1,6 +1,7 @@
 plugins { alias(libs.plugins.android.library); alias(libs.plugins.kotlin.multiplatform) }
 kotlin {
     androidTarget()
+    jvm()
     sourceSets {
         commonMain.dependencies {
             implementation(project(":shared:domain"))
