@@ -3,6 +3,7 @@ package com.kiisafezone.mip.domain
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 @JvmInline
 @Serializable
@@ -52,6 +53,37 @@ data class MatchEvent(
     }
 
     companion object { const val CURRENT_SCHEMA_VERSION: Int = 1 }
+}
+
+enum class PayloadValidationStatus { VALID, INVALID, UNSUPPORTED_TYPE }
+
+data class PayloadValidationResult(
+    val status: PayloadValidationStatus,
+    val errors: List<String> = emptyList(),
+)
+
+/**
+ * Validates required fields for the initial event types. Unknown future types
+ * are preserved and reported as unsupported rather than rejected.
+ */
+fun MatchEvent.validateInitialPayload(): PayloadValidationResult {
+    if (type !in MatchEventTypes.initial) {
+        return PayloadValidationResult(PayloadValidationStatus.UNSUPPORTED_TYPE)
+    }
+    val requiredKey = when (type) {
+        MatchEventTypes.SPELL_USED -> "abilityId"
+        MatchEventTypes.OBJECTIVE_OBSERVED -> "objectiveId"
+        MatchEventTypes.TACTICAL_NOTE -> "text"
+        else -> null // HERO_DIED has no mandatory payload fields in v1.
+    }
+    val value = requiredKey?.let { payload[it]?.jsonPrimitive?.contentOrNull }
+    val errors = if (requiredKey != null && value.isNullOrBlank()) {
+        listOf("Payload field '$requiredKey' is required for event type '$type'.")
+    } else emptyList()
+    return PayloadValidationResult(
+        status = if (errors.isEmpty()) PayloadValidationStatus.VALID else PayloadValidationStatus.INVALID,
+        errors = errors,
+    )
 }
 
 /** Stable ordering: match time, wall-clock time, then stable event ID. */
