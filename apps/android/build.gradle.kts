@@ -26,6 +26,10 @@ android {
     }
 }
 dependencies {
+    implementation(project(":apps:android:presentation"))
+    implementation(project(":data:local"))
+    implementation(project(":shared:domain"))
+    implementation(project(":shared:engine"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
