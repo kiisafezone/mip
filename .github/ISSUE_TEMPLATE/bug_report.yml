@@ -1,0 +1,45 @@
+name: Bug report
+description: Report a reproducible problem in MIP.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not upload credentials, personal data, game recordings, screenshots,
+        proprietary assets, or sensitive security details. Read the project policy first.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Problem
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ..."
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: App version/commit, Android version, device model (omit identifiers).
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant sanitized logs
+      description: Remove tokens, identifiers, personal data, and third-party content.
+    validations:
+      required: false
+  - type: textarea
+    id: policy
+    attributes:
+      label: Data-source and compliance impact
+      description: Does this involve a new data source, game observation, import, or third-party content?
+    validations:
+      required: true

@@ -1,0 +1,36 @@
+name: Feature request
+description: Propose a focused, policy-compliant improvement.
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and intended outcome
+      description: What user problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data-source impact
+      description: List every input/source, its owner, acquisition method, and provenance. Say "none" if not applicable.
+    validations:
+      required: true
+  - type: checkboxes
+    id: compliance
+    attributes:
+      label: Compliance review
+      options:
+        - label: I have read docs/POLICY_AND_COMPLIANCE.md.
+          required: true
+        - label: This proposal does not require blocked live capture, OCR, overlays, hidden-state tracking, memory/packet inspection, game modification, input automation, or bypasses.
+          required: true
+        - label: I have not included third-party assets or data without documented rights and permission.
+          required: true
