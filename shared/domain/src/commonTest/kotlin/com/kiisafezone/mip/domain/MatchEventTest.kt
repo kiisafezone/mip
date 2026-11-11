@@ -55,4 +55,22 @@ class MatchEventTest {
         assertEquals("FUTURE_EVENT_TYPE", decoded.type)
         assertEquals("keep-me", decoded.payload["newOptionalField"]?.toString()?.trim('"'))
     }
+    @Test fun validatesRequiredPayloadFieldsAndKeepsUnknownTypes() {
+        val missingAbility = sample.copy(payload = buildJsonObject {})
+        assertEquals(PayloadValidationStatus.INVALID, missingAbility.validateInitialPayload().status)
+
+        val validAbility = sample.copy(payload = buildJsonObject { put("abilityId", "flicker") })
+        assertEquals(PayloadValidationStatus.VALID, validAbility.validateInitialPayload().status)
+
+        val futureType = sample.copy(type = "FUTURE_EVENT")
+        assertEquals(PayloadValidationStatus.UNSUPPORTED_TYPE, futureType.validateInitialPayload().status)
+    }
+
+    @Test fun malformedRequiredPayloadValueIsReportedInsteadOfThrowing() {
+        val malformed = sample.copy(
+            payload = buildJsonObject { put("abilityId", buildJsonObject { put("nested", "value") }) },
+        )
+        assertEquals(PayloadValidationStatus.INVALID, malformed.validateInitialPayload().status)
+    }
+
 }
