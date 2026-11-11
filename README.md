@@ -31,10 +31,11 @@ and Android SDK Platform 36 installed, run:
 ./gradlew assembleDebug
 ```
 
-## Sprint 0
-See [Sprint 0 plan](docs/sprint-0/SPRINT_0.md) and the GitHub issue tracker.
+See [CI documentation](docs/CI.md) for automated verification and the
+[contribution guide](CONTRIBUTING.md) for development workflow.
 
 ## Compliance boundary
+
 Until Moonton explicitly authorizes a specific method and use in writing, do not
 implement automated live-match capture/OCR, overlays, hidden enemy tracking,
 memory or packet inspection, game modification, or input automation. Android
@@ -43,3 +44,9 @@ permissions are not publisher authorization. See
 
 MIP is independent and is not affiliated with, endorsed by, or sponsored by Moonton
 or Mobile Legends: Bang Bang.
+
+## License
+
+Original MIP code and documentation are licensed under Apache-2.0. This does not
+license third-party game assets, trademarks, or publisher content. See
+[LICENSE](LICENSE) and [Licensing scope](docs/LICENSING.md).
