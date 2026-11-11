@@ -35,6 +35,7 @@ From the repository root:
 ~~~sh
 ./gradlew --version
 ./gradlew verifySharedCoreNoAndroidImports
+./gradlew :shared:domain:compileKotlinJvm :shared:contracts:compileKotlinJvm :shared:engine:compileKotlinJvm
 ./gradlew assembleDebug
 ./gradlew :apps:android:lintDebug
 ./gradlew :apps:android:testDebugUnitTest
