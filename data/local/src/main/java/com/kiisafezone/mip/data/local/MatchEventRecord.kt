@@ -5,10 +5,10 @@ import com.kiisafezone.mip.domain.MatchEventId
 import com.kiisafezone.mip.domain.MatchEventSource
 import com.kiisafezone.mip.domain.MatchEventValidation
 import com.kiisafezone.mip.domain.MatchSessionId
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.encodeToString
 
 /** Room-shaped row; payload is stored as JSON text in SQLite. */
 internal data class MatchEventRecord(
