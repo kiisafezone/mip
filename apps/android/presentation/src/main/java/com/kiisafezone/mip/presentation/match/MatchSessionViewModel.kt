@@ -14,6 +14,7 @@ import com.kiisafezone.mip.domain.MatchResult
 import com.kiisafezone.mip.domain.MatchSession
 import com.kiisafezone.mip.domain.MatchSessionId
 import com.kiisafezone.mip.domain.MatchSessionRepository
+import com.kiisafezone.mip.domain.MatchSessionRevision
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -69,6 +70,7 @@ class MatchSessionViewModel(
         durationText: String,
         result: MatchResult,
         notes: String,
+        revisionReason: String,
     ) {
         if (heroName.isBlank() || role.isBlank()) {
             reportError(IllegalArgumentException("Hero and role are required."))
@@ -76,6 +78,10 @@ class MatchSessionViewModel(
         }
         val durationMs = if (durationText.isBlank()) null else parseGameTime(durationText) ?: run {
             reportError(IllegalArgumentException("Enter match duration as mm:ss, or leave it blank."))
+            return
+        }
+        if (existing != null && revisionReason.isBlank()) {
+            reportError(IllegalArgumentException("A metadata revision reason is required."))
             return
         }
         val session = if (existing == null) {
@@ -102,7 +108,21 @@ class MatchSessionViewModel(
             )
         }
         viewModelScope.launch {
-            runCatching { sessions.save(session) }
+            runCatching {
+                if (existing == null) {
+                    sessions.save(session)
+                } else if (session != existing) {
+                    val revision = MatchSessionRevision(
+                        id = UUID.randomUUID().toString(),
+                        matchId = session.id,
+                        beforeSnapshotJson = json.encodeToString(existing),
+                        afterSnapshotJson = json.encodeToString(session),
+                        reason = revisionReason.trim(),
+                        changedAtEpochMs = System.currentTimeMillis(),
+                    )
+                    sessions.revise(session, revision)
+                }
+            }
                 .onSuccess {
                     openMatch(session.id)
                     refresh()
@@ -120,7 +140,8 @@ class MatchSessionViewModel(
         durationText: String,
         result: MatchResult,
         notes: String,
-    ) = saveMatch(existing, heroName, role, mode, gameVersionId, durationText, result, notes)
+        revisionReason: String,
+    ) = saveMatch(existing, heroName, role, mode, gameVersionId, durationText, result, notes, revisionReason)
 
     fun deleteMatch() {
         val current = _uiState.value.selectedSession ?: return

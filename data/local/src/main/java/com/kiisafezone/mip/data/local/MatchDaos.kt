@@ -57,3 +57,15 @@ internal interface MatchEventRevisionDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(record: MatchEventRevisionRecord)
 }
+
+@Dao
+internal interface MatchSessionRevisionDao {
+    @Query(
+        "SELECT * FROM match_session_revisions WHERE matchId = :matchId " +
+            "ORDER BY changedAtEpochMs ASC, id ASC",
+    )
+    suspend fun getForMatch(matchId: String): List<MatchSessionRevisionRecord>
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insert(record: MatchSessionRevisionRecord)
+}

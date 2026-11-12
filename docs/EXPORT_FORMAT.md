@@ -1,7 +1,7 @@
 # Match export format
 
 **Format:** MIP Match Export JSON  
-**Schema version:** 1  
+**Schema version:** 2  
 **Direction:** Explicit, user-initiated export of one locally stored match.
 
 ## Purpose and boundaries
@@ -23,6 +23,7 @@ upload the file or send it to a server.
 | `session` | Object | One `MatchSession` record |
 | `events` | Array | Match events in deterministic timeline order |
 | `revisions` | Array | Event correction records for this match |
+| `sessionRevisions` | Array | Immutable match-metadata revision records |
 
 ## Session object
 
@@ -54,6 +55,15 @@ Each revision contains a stable revision ID, event ID, match ID, complete
 before/after event snapshots as JSON strings, a player-provided correction
 reason, correction time, and revision schema version. Revisions allow a reviewer
 to distinguish the original entry from the corrected event.
+
+## Match metadata revisions
+
+Each sessionRevisions item contains a stable revision ID, match ID, complete
+before/after MatchSession snapshots as JSON strings, a player-provided reason,
+change time, and revision schema version. The current session object represents
+the latest saved metadata; the revision array preserves prior states in
+chronological order. Revisions are append-only and are removed when the parent
+match is deleted.
 
 ## Compatibility
 

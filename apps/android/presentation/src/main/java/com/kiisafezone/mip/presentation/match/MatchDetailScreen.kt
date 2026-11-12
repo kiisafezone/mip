@@ -28,7 +28,7 @@ fun MatchDetailScreen(
     session: MatchSession,
     events: List<MatchEvent>,
     onBack: () -> Unit,
-    onUpdate: (MatchSession, String, String, String, String, String, MatchResult, String) -> Unit,
+    onUpdate: (MatchSession, String, String, String, String, String, MatchResult, String, String) -> Unit,
     onAddEvent: (String, String, String) -> Unit,
     onCorrectEvent: (MatchEvent, String, String, String, String) -> Unit,
     onDeleteEvent: (MatchEventId) -> Unit,
@@ -102,8 +102,8 @@ fun MatchDetailScreen(
             text = {
                 NewMatchScreen(
                     existing = session,
-                    onSave = { hero, role, mode, patch, duration, result, notes ->
-                        onUpdate(session, hero, role, mode, patch, duration, result, notes)
+                    onSave = { hero, role, mode, patch, duration, result, notes, revisionReason ->
+                        onUpdate(session, hero, role, mode, patch, duration, result, notes, revisionReason)
                         editingMatch = false
                     },
                     onCancel = { editingMatch = false },

@@ -1,6 +1,6 @@
 # Local-First Session Persistence Design
 
-**Status:** H1 Room implementation baseline; verification and generated-schema review remain release checks.
+**Status:** H1 Room database version 2; metadata revision history is persisted locally.
 
 ## 1. Requirements and boundaries
 
@@ -32,6 +32,25 @@
 Index: index_match_sessions_startedAtEpochMillis on startedAtEpochMillis DESC
 for recent-session lookup. Primary-key lookup uses id.
 
+### match_session_revisions
+
+| Column | SQLite type | Rules |
+|---|---|---|
+| id | TEXT | PRIMARY KEY, NOT NULL |
+| matchId | TEXT | NOT NULL, FK to match_sessions(id) |
+| beforeSnapshotJson | TEXT | NOT NULL full session snapshot before the edit |
+| afterSnapshotJson | TEXT | NOT NULL full session snapshot after the edit |
+| reason | TEXT | NOT NULL, player-provided |
+| changedAtEpochMs | INTEGER | NOT NULL, >= 0 |
+| schemaVersion | INTEGER | NOT NULL, >= 1 |
+
+Index: index_match_session_revisions_matchId_changedAtEpochMs on
+(matchId, changedAtEpochMs). Revisions are inserted with ABORT conflict handling;
+there is no update or delete operation for an individual revision.
+
+Foreign key: match_session_revisions.matchId REFERENCES match_sessions(id)
+ON DELETE CASCADE.
+
 ### match_events
 
 | Column | SQLite type | Rules |
@@ -59,13 +78,12 @@ The UI must warn that this deletion is permanent and local.
 
 ## 3. Migration policy
 
-- Room database version starts at 1 when Room is introduced.
-- Every schema change increments the version and ships an explicit, tested
-  Migration; destructive fallback is disabled for user data.
-- Migration SQL and a schema export are committed with the change.
+- Room database version 1 introduced the initial session/event schema.
+- Version 2 adds match_session_revisions through the explicit MIGRATION_1_2.
+- Every future schema change increments the version and ships an explicit,
+  tested Migration; destructive fallback remains disabled for user data.
+- Migration SQL and the generated Room schema export are committed with the change.
 - Test migrations from every supported prior schema, including populated rows.
-- Do not deploy a production database until the first Room migration and schema
-  export are reviewed.
 
 Proposed initial DDL is in data/local/schema/001_initial.sql. It is a design
 artifact, not yet wired to a Room database.
@@ -80,7 +98,10 @@ and rows are converted back on reads. Room types never leak into domain.
 The current persistence records map all MatchSession fields and all MatchEvent
 fields. Event payload is stored as JSON text so unknown event types and unknown
 payload keys survive round trips. Enum values are stored by stable name; changing
-or removing a persisted enum value requires a migration.
+or removing a persisted enum value requires a migration. Metadata edits update
+the session and append an immutable before/after MatchSessionRevision in one
+Room transaction. Revision snapshots include the complete serialized session,
+the player-provided reason, and the change time.
 
 Writes that create a session and its first events, or delete a session, must use
 database transactions. Event reads must explicitly order by

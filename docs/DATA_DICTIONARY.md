@@ -88,3 +88,18 @@ See docs/GAME_MECHANICS_DATA.md.
 
 Correction history is retained when an individual event is deleted and is
 removed with its parent match. H1 exports include all revisions for the match.
+
+
+## MatchSessionRevision
+
+| Field | Type | Meaning | Constraint |
+|---|---|---|---|
+| id | String | Stable metadata revision identifier | Nonblank, unique |
+| matchId | String | Parent match | Nonblank; references an existing match |
+| beforeSnapshotJson | String | Full serialized session before the edit | Nonblank JSON |
+| afterSnapshotJson | String | Full serialized session after the edit | Nonblank JSON |
+| reason | String | Player-provided reason for the metadata change | Nonblank |
+| changedAtEpochMs | Int64 | UTC time of the metadata change | >= 0 |
+| schemaVersion | Int32 | Revision record schema | >= 1 |
+
+Metadata revisions are append-only. A match deletion removes its revision history.

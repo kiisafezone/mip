@@ -10,7 +10,7 @@ object MatchDatabaseFactory {
             context.applicationContext,
             MipDatabase::class.java,
             "mip-matches.db",
-        ).build()
+        ).addMigrations(MIGRATION_1_2).build()
         return RoomMatchRepository(database)
     }
 }

@@ -347,7 +347,7 @@ This file records implementation work package by package. It does not replace ma
 
 ## Work package 8 — Commit generated Room schema and verify persistence instrumentation
 
-**Commit:** pending
+**Commit:** 8ee53bc2bf10e7e12a6c6159687868069f4b729b
 
 ### Files changed
 - `data/local/schemas/com.kiisafezone.mip.data.local.MipDatabase/1.json`
@@ -369,6 +369,61 @@ This file records implementation work package by package. It does not replace ma
 - §6.1 local durable match storage.
 - §6.2 structured event persistence and deterministic ordering.
 - §12 reproducible Room schema export and instrumentation verification.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
+
+
+## Work package 9 — Immutable match metadata revision history
+
+**Commit:** pending
+
+### Files changed
+- shared/domain/src/commonMain/kotlin/com/kiisafezone/mip/domain/MatchSessionRevision.kt
+- shared/domain/src/commonMain/kotlin/com/kiisafezone/mip/domain/MatchSessionRepository.kt
+- shared/domain/src/commonTest/kotlin/com/kiisafezone/mip/domain/MatchSessionRevisionTest.kt
+- shared/contracts/src/commonMain/kotlin/com/kiisafezone/mip/contracts/MatchExportContract.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/MatchSessionRevisionRecord.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/MatchDaos.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/MipDatabase.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/Migration_1_2.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/MatchDatabaseFactory.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/RoomMatchRepository.kt
+- data/local/src/main/java/com/kiisafezone/mip/data/local/export/MatchExportService.kt
+- data/local/src/androidTest/java/com/kiisafezone/mip/data/local/RoomMatchRepositoryTest.kt
+- data/local/src/test/java/com/kiisafezone/mip/data/local/export/MatchExportServiceTest.kt
+- apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchSessionViewModel.kt
+- apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/NewMatchScreen.kt
+- apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchDetailScreen.kt
+- apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchApp.kt
+- data/local/schema/002_session_revisions.sql
+- docs/DATA_DICTIONARY.md
+- docs/LOCAL_PERSISTENCE.md
+- docs/EXPORT_FORMAT.md
+- REVIEW.md (this log)
+
+### Tests run + results
+- Added domain validation tests for revision identifiers, snapshots, reason, timestamp, and schema version.
+- Added Room persistence, append-only duplicate-ID rejection, cascade deletion, and populated version-1-to-version-2 migration tests.
+- Added export coverage for session metadata revision history.
+- CI verification and generated Room schema version 2 are pending; no pass is claimed.
+
+### Assumptions
+- Editing match metadata requires a nonblank player-provided reason.
+- A metadata revision stores full serialized before/after MatchSession snapshots and a UTC epoch-millisecond change time.
+- Session update and revision insert are one Room transaction; revision rows have no update/delete DAO operation.
+- Export schema increments to version 2 and includes sessionRevisions; older exports without that optional field decode as an empty list.
+
+### Known issues
+- Room-generated schema version 2 must be obtained from CI, inspected, and included in the final WP9 commit.
+- Human-device accessibility review and H1 participant validation remain outstanding.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 editable match metadata with traceable change history.
+- §10 immutable before/after provenance and reason.
+- §12 versioned Room migration and persistence/export tests.
 
 ### Decision
 - [ ] Approve

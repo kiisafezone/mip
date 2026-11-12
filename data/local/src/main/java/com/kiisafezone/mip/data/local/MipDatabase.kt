@@ -8,12 +8,14 @@ import androidx.room.RoomDatabase
         MatchSessionRecord::class,
         MatchEventRecord::class,
         MatchEventRevisionRecord::class,
+        MatchSessionRevisionRecord::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 internal abstract class MipDatabase : RoomDatabase() {
     abstract fun matchSessionDao(): MatchSessionDao
     abstract fun matchEventDao(): MatchEventDao
     abstract fun matchEventRevisionDao(): MatchEventRevisionDao
+    abstract fun matchSessionRevisionDao(): MatchSessionRevisionDao
 }

@@ -68,8 +68,8 @@ fun MatchApp(viewModel: MatchSessionViewModel) {
                     },
                 )
                 creatingMatch -> NewMatchScreen(
-                    onSave = { hero, role, mode, patch, duration, result, notes ->
-                        viewModel.saveMatch(null, hero, role, mode, patch, duration, result, notes)
+                    onSave = { hero, role, mode, patch, duration, result, notes, revisionReason ->
+                        viewModel.saveMatch(null, hero, role, mode, patch, duration, result, notes, revisionReason)
                         creatingMatch = false
                     },
                     onCancel = { creatingMatch = false },

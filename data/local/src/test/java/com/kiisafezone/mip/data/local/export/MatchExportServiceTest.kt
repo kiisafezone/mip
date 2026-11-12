@@ -9,6 +9,7 @@ import com.kiisafezone.mip.domain.MatchEventValidation
 import com.kiisafezone.mip.domain.MatchSession
 import com.kiisafezone.mip.domain.MatchSessionId
 import com.kiisafezone.mip.domain.MatchSessionRepository
+import com.kiisafezone.mip.domain.MatchSessionRevision
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -42,8 +43,16 @@ class MatchExportServiceTest {
             reason = "Verified from notes",
             changedAtEpochMs = 300,
         )
+        val sessionRevision = MatchSessionRevision(
+            id = "session-revision-1",
+            matchId = session.id,
+            beforeSnapshotJson = """{"notes":null}""",
+            afterSnapshotJson = """{"notes":"corrected"}""",
+            reason = "Corrected match metadata",
+            changedAtEpochMs = 350,
+        )
         val service = MatchExportService(
-            sessions = FakeSessions(session),
+            sessions = FakeSessions(session, sessionRevision),
             events = FakeEvents(session.id, event, revision),
         )
 
@@ -54,13 +63,20 @@ class MatchExportServiceTest {
         assertEquals(session, decoded.session)
         assertEquals(listOf(event), decoded.events)
         assertEquals(listOf(revision), decoded.revisions)
+        assertEquals(listOf(sessionRevision), decoded.sessionRevisions)
         assertEquals(400L, decoded.exportedAtEpochMs)
     }
 
-    private class FakeSessions(private val session: MatchSession) : MatchSessionRepository {
+    private class FakeSessions(
+        private val session: MatchSession,
+        private val revision: MatchSessionRevision,
+    ) : MatchSessionRepository {
         override suspend fun get(id: MatchSessionId) = session.takeIf { it.id == id }
         override suspend fun getAll() = listOf(session)
         override suspend fun save(session: MatchSession) = Unit
+        override suspend fun revise(session: MatchSession, revision: MatchSessionRevision) = Unit
+        override suspend fun getSessionRevisionsForMatch(matchId: MatchSessionId) =
+            if (matchId == session.id) listOf(revision) else emptyList()
         override suspend fun delete(id: MatchSessionId) = Unit
     }
 

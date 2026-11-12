@@ -8,6 +8,7 @@ import com.kiisafezone.mip.domain.MatchEventRevision
 import com.kiisafezone.mip.domain.MatchSession
 import com.kiisafezone.mip.domain.MatchSessionId
 import com.kiisafezone.mip.domain.MatchSessionRepository
+import com.kiisafezone.mip.domain.MatchSessionRevision
 
 /** Android Room adapter implementing the shared domain persistence ports. */
 class RoomMatchRepository internal constructor(
@@ -16,6 +17,7 @@ class RoomMatchRepository internal constructor(
     private val sessions get() = database.matchSessionDao()
     private val events get() = database.matchEventDao()
     private val revisions get() = database.matchEventRevisionDao()
+    private val sessionRevisions get() = database.matchSessionRevisionDao()
 
     override suspend fun get(id: MatchSessionId): MatchSession? =
         sessions.get(id.value)?.toDomain()
@@ -26,6 +28,20 @@ class RoomMatchRepository internal constructor(
     override suspend fun save(session: MatchSession) {
         sessions.upsert(session.toRecord())
     }
+
+    override suspend fun revise(session: MatchSession, revision: MatchSessionRevision) {
+        require(session.id == revision.matchId) {
+            "Session revision must refer to the revised match."
+        }
+        database.withTransaction {
+            require(sessions.get(session.id.value) != null) { "Match does not exist." }
+            sessions.upsert(session.toRecord())
+            sessionRevisions.insert(revision.toRecord())
+        }
+    }
+
+    override suspend fun getSessionRevisionsForMatch(matchId: MatchSessionId): List<MatchSessionRevision> =
+        sessionRevisions.getForMatch(matchId.value).map(MatchSessionRevisionRecord::toDomain)
 
     override suspend fun delete(id: MatchSessionId) {
         sessions.delete(id.value)

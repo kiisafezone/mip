@@ -20,12 +20,14 @@ class MatchExportService(
         val session = requireNotNull(sessions.get(matchId)) { "Match does not exist." }
         val matchEvents = events.getForMatch(matchId).sortedWith(matchEventTimelineComparator)
         val revisions = events.getRevisionsForMatch(matchId)
+        val sessionRevisions = sessions.getSessionRevisionsForMatch(matchId)
         return json.encodeToString(
             MatchExportContract(
                 exportedAtEpochMs = exportedAtEpochMs,
                 session = session,
                 events = matchEvents,
                 revisions = revisions,
+                sessionRevisions = sessionRevisions,
             ),
         )
     }

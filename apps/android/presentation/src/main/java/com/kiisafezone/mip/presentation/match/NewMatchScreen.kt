@@ -20,7 +20,7 @@ import com.kiisafezone.mip.domain.MatchSession
 @Composable
 fun NewMatchScreen(
     existing: MatchSession? = null,
-    onSave: (String, String, String, String, String, MatchResult, String) -> Unit,
+    onSave: (String, String, String, String, String, MatchResult, String, String) -> Unit,
     onCancel: (() -> Unit)? = null,
 ) {
     var hero by remember(existing?.id) { mutableStateOf(existing?.heroName.orEmpty()) }
@@ -29,6 +29,7 @@ fun NewMatchScreen(
     var patch by remember(existing?.id) { mutableStateOf(existing?.gameVersionId.orEmpty()) }
     var duration by remember(existing?.id) { mutableStateOf(existing?.durationMs?.let { "${it / 60_000}:${((it / 1_000) % 60).toString().padStart(2, '0')}" }.orEmpty()) }
     var notes by remember(existing?.id) { mutableStateOf(existing?.notes.orEmpty()) }
+    var revisionReason by remember(existing?.id) { mutableStateOf("") }
     var result by remember(existing?.id) { mutableStateOf(existing?.result) }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -39,6 +40,14 @@ fun NewMatchScreen(
         OutlinedTextField(patch, { patch = it }, label = { Text("Game patch (optional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         OutlinedTextField(duration, { duration = it }, label = { Text("Match duration (mm:ss, optional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         OutlinedTextField(notes, { notes = it }, label = { Text("Notes (optional)") }, modifier = Modifier.fillMaxWidth())
+        if (existing != null) {
+            OutlinedTextField(
+                revisionReason,
+                { revisionReason = it },
+                label = { Text("Reason for metadata change") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         Text("Result")
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             MatchResult.entries.forEach { option ->
@@ -47,8 +56,8 @@ fun NewMatchScreen(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
-                onClick = { onSave(hero, role, mode, patch, duration, requireNotNull(result), notes) },
-                enabled = hero.isNotBlank() && role.isNotBlank() && result != null && isValidOptionalDuration(duration),
+                onClick = { onSave(hero, role, mode, patch, duration, requireNotNull(result), notes, revisionReason) },
+                enabled = hero.isNotBlank() && role.isNotBlank() && result != null && isValidOptionalDuration(duration) && (existing == null || revisionReason.isNotBlank()),
             ) { Text("Save match") }
             if (onCancel != null) Button(onClick = onCancel) { Text("Cancel") }
         }
