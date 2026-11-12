@@ -52,7 +52,7 @@ fun MatchDetailScreen(
         Text(session.heroName ?: "Match review", style = MaterialTheme.typography.headlineSmall)
         Text(listOfNotNull(session.role, session.mode, session.result?.name).joinToString(" · "))
         Text("Status: ${session.status.name} · ${events.size} recorded events")
-        if (session.notes != null) Text(session.notes)
+        session.notes?.let { Text(it) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TextButton(onClick = { editingMatch = true }) { Text("Edit details") }
             TextButton(onClick = onExport) { Text("Export JSON") }

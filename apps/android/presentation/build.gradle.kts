@@ -12,6 +12,7 @@ android {
 }
 dependencies {
     implementation(project(":shared:domain"))
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
