@@ -1,3 +1,7 @@
+> **Authority notice (2026-11-13):** This checklist is retained as a historical H1/v1.0.0 planning artifact. It is not the current product-plan authority. The approved source of truth is [`docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md`](docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md); its M0–M5 roadmap, milestone boundaries, and approval gates govern. Do not treat legacy checkboxes or H1 stage labels here as current completion evidence or implementation authorization.
+
+---
+
 # MIP — BUILD PLAN
 
 **Product:** Mobile Legends Intelligence Platform  
