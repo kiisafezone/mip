@@ -36,7 +36,7 @@ class RoomMatchRepositoryTest {
     }
 
     @Test fun persistsMatchAndReturnsEventsInDeterministicOrder() = runBlocking {
-        val match = MatchSession(MatchSessionId("match-1"), 1_000, heroName = "Miya", role = "Gold Lane")
+        val match = MatchSession(MatchSessionId("match-1"), 1_000, heroName = "Miya", role = "Gold Lane", gameVersionId = "patch-1", durationMs = 720_000)
         repository.save(match)
         repository.save(event("event-z", match.id, 20_000, 20))
         repository.save(event("event-b", match.id, 10_000, 20))

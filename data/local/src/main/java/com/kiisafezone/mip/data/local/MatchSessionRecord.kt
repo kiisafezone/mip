@@ -24,6 +24,7 @@ internal data class MatchSessionRecord(
     val role: String?,
     val result: String?,
     val mode: String?,
+    val durationMs: Long?,
 )
 
 internal fun MatchSessionRecord.toDomain() = MatchSession(
@@ -38,6 +39,7 @@ internal fun MatchSessionRecord.toDomain() = MatchSession(
     role = role,
     result = result?.let { MatchResult.valueOf(it) },
     mode = mode,
+    durationMs = durationMs,
 )
 
 internal fun MatchSession.toRecord() = MatchSessionRecord(
@@ -52,4 +54,5 @@ internal fun MatchSession.toRecord() = MatchSessionRecord(
     role = role,
     result = result?.name,
     mode = mode,
+    durationMs = durationMs,
 )

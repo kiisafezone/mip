@@ -20,12 +20,14 @@ import com.kiisafezone.mip.domain.MatchSession
 @Composable
 fun NewMatchScreen(
     existing: MatchSession? = null,
-    onSave: (String, String, String, MatchResult, String) -> Unit,
+    onSave: (String, String, String, String, String, MatchResult, String) -> Unit,
     onCancel: (() -> Unit)? = null,
 ) {
     var hero by remember(existing?.id) { mutableStateOf(existing?.heroName.orEmpty()) }
     var role by remember(existing?.id) { mutableStateOf(existing?.role.orEmpty()) }
     var mode by remember(existing?.id) { mutableStateOf(existing?.mode.orEmpty()) }
+    var patch by remember(existing?.id) { mutableStateOf(existing?.gameVersionId.orEmpty()) }
+    var duration by remember(existing?.id) { mutableStateOf(existing?.durationMs?.let { "${it / 60_000}:${((it / 1_000) % 60).toString().padStart(2, '0')}" }.orEmpty()) }
     var notes by remember(existing?.id) { mutableStateOf(existing?.notes.orEmpty()) }
     var result by remember(existing?.id) { mutableStateOf(existing?.result) }
 
@@ -34,6 +36,8 @@ fun NewMatchScreen(
         OutlinedTextField(hero, { hero = it }, label = { Text("Hero") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         OutlinedTextField(role, { role = it }, label = { Text("Role") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         OutlinedTextField(mode, { mode = it }, label = { Text("Mode (optional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+        OutlinedTextField(patch, { patch = it }, label = { Text("Game patch (optional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
+        OutlinedTextField(duration, { duration = it }, label = { Text("Match duration (mm:ss, optional)") }, modifier = Modifier.fillMaxWidth(), singleLine = true)
         OutlinedTextField(notes, { notes = it }, label = { Text("Notes (optional)") }, modifier = Modifier.fillMaxWidth())
         Text("Result")
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -43,7 +47,7 @@ fun NewMatchScreen(
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
-                onClick = { onSave(hero, role, mode, requireNotNull(result), notes) },
+                onClick = { onSave(hero, role, mode, patch, duration, requireNotNull(result), notes) },
                 enabled = hero.isNotBlank() && role.isNotBlank() && result != null,
             ) { Text("Save match") }
             if (onCancel != null) Button(onClick = onCancel) { Text("Cancel") }

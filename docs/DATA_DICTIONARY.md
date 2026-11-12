@@ -15,6 +15,7 @@
 | role | Nullable String | Manually entered role/lane | Nonblank when present; required by H1 UI |
 | result | Nullable Enum | WIN, LOSS, DRAW, UNKNOWN | Explicitly selected in H1 UI |
 | mode | Nullable String | Match mode when known | Nonblank when present |
+| durationMs | Nullable Int64 | Match duration in milliseconds | >= 0 when present |
 
 ## MatchEvent
 

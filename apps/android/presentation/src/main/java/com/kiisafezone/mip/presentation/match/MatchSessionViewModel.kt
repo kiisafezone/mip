@@ -14,7 +14,6 @@ import com.kiisafezone.mip.domain.MatchResult
 import com.kiisafezone.mip.domain.MatchSession
 import com.kiisafezone.mip.domain.MatchSessionId
 import com.kiisafezone.mip.domain.MatchSessionRepository
-import com.kiisafezone.mip.domain.MatchSessionStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,11 +65,17 @@ class MatchSessionViewModel(
         heroName: String,
         role: String,
         mode: String,
+        gameVersionId: String,
+        durationText: String,
         result: MatchResult,
         notes: String,
     ) {
         if (heroName.isBlank() || role.isBlank()) {
             reportError(IllegalArgumentException("Hero and role are required."))
+            return
+        }
+        val durationMs = if (durationText.isBlank()) null else parseGameTime(durationText) ?: run {
+            reportError(IllegalArgumentException("Enter match duration as mm:ss, or leave it blank."))
             return
         }
         val session = if (existing == null) {
@@ -80,6 +85,8 @@ class MatchSessionViewModel(
                 heroName = heroName.trim(),
                 role = role.trim(),
                 mode = mode.trim().ifBlank { null },
+                gameVersionId = gameVersionId.trim().ifBlank { null },
+                durationMs = durationMs,
                 result = result,
                 notes = notes.trim().ifBlank { null },
             )
@@ -88,6 +95,8 @@ class MatchSessionViewModel(
                 heroName = heroName.trim(),
                 role = role.trim(),
                 mode = mode.trim().ifBlank { null },
+                gameVersionId = gameVersionId.trim().ifBlank { null },
+                durationMs = durationMs,
                 result = result,
                 notes = notes.trim().ifBlank { null },
             )
@@ -107,9 +116,11 @@ class MatchSessionViewModel(
         heroName: String,
         role: String,
         mode: String,
+        gameVersionId: String,
+        durationText: String,
         result: MatchResult,
         notes: String,
-    ) = saveMatch(existing, heroName, role, mode, result, notes)
+    ) = saveMatch(existing, heroName, role, mode, gameVersionId, durationText, result, notes)
 
     fun deleteMatch() {
         val current = _uiState.value.selectedSession ?: return

@@ -28,7 +28,7 @@ upload the file or send it to a server.
 
 The serialized session includes its stable ID, record creation time, optional
 end time/status, optional game version/patch, optional notes, schema version,
-hero, role, result, and mode. Result values are `WIN`, `LOSS`, `DRAW`, or
+hero, role, result, mode, optional patch, and optional match duration. Result values are `WIN`, `LOSS`, `DRAW`, or
 `UNKNOWN`. Hero and role are required by the H1 capture UI.
 
 ## Event objects

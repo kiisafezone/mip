@@ -22,6 +22,11 @@
 | status | TEXT | NOT NULL; ACTIVE, PAUSED, COMPLETED |
 | gameVersionId | TEXT | NULL or non-empty |
 | notes | TEXT | NULL |
+| heroName | TEXT | NULL |
+| role | TEXT | NULL |
+| result | TEXT | NULL |
+| mode | TEXT | NULL |
+| durationMs | INTEGER | NULL or >= 0 |
 | schemaVersion | INTEGER | NOT NULL, >= 1 |
 
 Index: index_match_sessions_startedAtEpochMillis on startedAtEpochMillis DESC

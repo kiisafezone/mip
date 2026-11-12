@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS match_sessions (
     heroName TEXT,
     role TEXT,
     result TEXT,
-    mode TEXT
+    mode TEXT,
+    durationMs INTEGER
 );
 
 CREATE INDEX IF NOT EXISTS index_match_sessions_startedAtEpochMillis

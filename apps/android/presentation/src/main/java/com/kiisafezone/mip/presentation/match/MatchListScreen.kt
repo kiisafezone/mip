@@ -43,7 +43,7 @@ fun MatchListScreen(
                     ) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(session.heroName ?: "Unspecified hero", style = MaterialTheme.typography.titleMedium)
-                            Text(listOfNotNull(session.role, session.mode, session.result?.name).joinToString(" · "))
+                            Text(listOfNotNull(session.role, session.mode, session.gameVersionId, session.durationMs?.let { (it / 60_000).toString() + ":" + ((it / 1_000) % 60).toString().padStart(2, "0") }, session.result?.name).joinToString(" · "))
                             Text(DateFormat.getDateTimeInstance().format(Date(session.startedAtEpochMillis)))
                         }
                     }

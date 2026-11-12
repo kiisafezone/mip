@@ -28,7 +28,7 @@ fun MatchDetailScreen(
     session: MatchSession,
     events: List<MatchEvent>,
     onBack: () -> Unit,
-    onUpdate: (MatchSession, String, String, String, MatchResult, String) -> Unit,
+    onUpdate: (MatchSession, String, String, String, String, String, MatchResult, String) -> Unit,
     onAddEvent: (String, String, String) -> Unit,
     onCorrectEvent: (MatchEvent, String, String, String, String) -> Unit,
     onDeleteEvent: (MatchEventId) -> Unit,
@@ -47,7 +47,7 @@ fun MatchDetailScreen(
     ) {
         TextButton(onClick = onBack) { Text("← All matches") }
         Text(session.heroName ?: "Match review", style = MaterialTheme.typography.headlineSmall)
-        Text(listOfNotNull(session.role, session.mode, session.result?.name).joinToString(" · "))
+        Text(listOfNotNull(session.role, session.mode, session.gameVersionId, session.durationMs?.let { (it / 60_000).toString() + ":" + ((it / 1_000) % 60).toString().padStart(2, "0") }, session.result?.name).joinToString(" · "))
         Text("${events.size} recorded events")
         session.notes?.let { Text(it) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -101,8 +101,8 @@ fun MatchDetailScreen(
             text = {
                 NewMatchScreen(
                     existing = session,
-                    onSave = { hero, role, mode, result, notes ->
-                        onUpdate(session, hero, role, mode, result, notes)
+                    onSave = { hero, role, mode, patch, duration, result, notes ->
+                        onUpdate(session, hero, role, mode, patch, duration, result, notes)
                         editingMatch = false
                     },
                     onCancel = { editingMatch = false },

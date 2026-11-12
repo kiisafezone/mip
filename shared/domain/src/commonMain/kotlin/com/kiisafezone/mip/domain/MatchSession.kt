@@ -28,6 +28,7 @@ data class MatchSession(
     val role: String? = null,
     val result: MatchResult? = null,
     val mode: String? = null,
+    val durationMs: Long? = null,
 ) {
     init {
         require(startedAtEpochMillis >= 0) { "Start time must not be negative." }
@@ -39,6 +40,7 @@ data class MatchSession(
         require(heroName == null || heroName.isNotBlank()) { "Hero name must not be blank." }
         require(role == null || role.isNotBlank()) { "Role must not be blank." }
         require(mode == null || mode.isNotBlank()) { "Mode must not be blank." }
+        require(durationMs == null || durationMs >= 0) { "Match duration must not be negative." }
         require(status != MatchSessionStatus.COMPLETED || endedAtEpochMillis != null) {
             "A completed session must have an end timestamp."
         }

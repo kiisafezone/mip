@@ -35,9 +35,16 @@ class MatchSessionTest {
             role = "Gold Lane",
             result = MatchResult.WIN,
             mode = "Ranked",
+            durationMs = 720_000,
         )
         val json = Json { ignoreUnknownKeys = true }
         assertEquals(session, json.decodeFromString<MatchSession>(json.encodeToString(session)))
+    }
+
+    @Test fun rejectsNegativeMatchDuration() {
+        assertFailsWith<IllegalArgumentException> {
+            MatchSession(MatchSessionId("m1"), 100, durationMs = -1)
+        }
     }
 
     @Test fun matchMetadataMustNotBeBlankWhenPresent() {

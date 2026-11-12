@@ -40,6 +40,55 @@ This file records implementation work package by package. It does not replace ma
 
 ---
 
+
+## Work package 2 — On-device Room persistence
+
+**Commit:** `1eefe971bd0dbb539ac9928670aa4cedbd7dc263`
+
+### Files changed
+- `data/local/build.gradle.kts`
+- `data/local/schema/001_initial.sql`
+- `data/local/schemas/.gitkeep`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MatchDaos.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MatchDatabaseFactory.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MatchEventRecord.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MatchEventRevisionRecord.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MatchSessionRecord.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MipDatabase.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/RoomMatchRepository.kt`
+- `data/local/src/androidTest/java/com/kiisafezone/mip/data/local/RoomMatchRepositoryTest.kt`
+- `gradle/libs.versions.toml`
+- `build.gradle.kts`
+- `REVIEW.md` (this log)
+
+### Tests run + results
+- Instrumentation tests added for persistence/reopen, deterministic event ordering, correction transaction, event deletion, and match cascade deletion.
+- Not run locally in this execution environment.
+- CI verification was deferred until the complete workflow was wired; no pass is claimed yet.
+
+### Assumptions
+- Room is selected because H1 requires durable local persistence and `docs/LOCAL_PERSISTENCE.md` already specifies Room as the Android adapter.
+- Database schema starts at version 1 because no Room database has shipped on `main`.
+- No destructive migration fallback is enabled.
+- No network or game observation is added.
+
+### Known issues
+- Generated Room schema JSON still needs to be produced by KSP, inspected, and committed after CI/build.
+- Build and instrumentation results are pending.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 local persistence and offline-ready repository boundary.
+- §6.2 structured event persistence and deterministic ordering.
+- §10 provenance/correction persistence.
+- §12 local persistence adapter and separation from shared domain.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
+
+---
+
 ## Work package 3 — Android post-match capture and review UI
 
 **Commit:** `af42fac0cd52140def5a63bbc2eb9dcd2979097e`
@@ -92,7 +141,7 @@ This file records implementation work package by package. It does not replace ma
 
 ## Work package 4 — Versioned export, documentation, and CI verification wiring
 
-**Commit:** pending
+**Commit:** `68fa195b7a06f5155ed144eff306fd02ae697296`
 
 ### Files changed
 - `shared/domain/src/commonMain/kotlin/com/kiisafezone/mip/domain/MatchExportRepository.kt`
@@ -131,6 +180,56 @@ This file records implementation work package by package. It does not replace ma
 - §10 evidence provenance and correction history in export.
 - §12 automated verification and offline/local persistence checks.
 - §14 recorded change control and separate review/merge authorization.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
+
+---
+
+## Work package 5 — Complete H1 match metadata capture
+
+**Commit:** pending
+
+### Files changed
+- `shared/domain/src/commonMain/kotlin/com/kiisafezone/mip/domain/MatchSession.kt`
+- `shared/domain/src/commonTest/kotlin/com/kiisafezone/mip/domain/MatchSessionTest.kt`
+- `data/local/src/main/java/com/kiisafezone/mip/data/local/MatchSessionRecord.kt`
+- `data/local/schema/001_initial.sql`
+- `data/local/src/androidTest/java/com/kiisafezone/mip/data/local/RoomMatchRepositoryTest.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/NewMatchScreen.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchSessionViewModel.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchApp.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchDetailScreen.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchListScreen.kt`
+- `docs/DATA_DICTIONARY.md`
+- `docs/LOCAL_PERSISTENCE.md`
+- `docs/EXPORT_FORMAT.md`
+- `.github/workflows/android-ci.yml`
+
+### Tests run + results
+- Added domain validation for non-negative match duration and round-trip coverage for duration.
+- Extended Room persistence test fixture to verify patch and duration survive persistence.
+- Not run locally; updated pull-request CI will run all tests and upload generated Room schema JSON.
+- No pass is claimed yet.
+
+### Assumptions
+- Match duration is optional and entered as match-relative mm:ss; unknown duration remains absent.
+- Game patch/version is optional and manually entered; no patch is inferred or fetched.
+- Duration is stored as milliseconds in the domain and local database.
+- Existing Room schema is still version 1 because this database has not shipped; the first schema is being finalized before release.
+
+### Known issues
+- Match metadata edits currently update the session record in place; event corrections have before/after audit records, but session metadata does not yet have a separate revision history.
+- Generated Room schema JSON and CI results are pending.
+- Human-device accessibility review and participant testing remain outstanding.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 hero, role, result, mode, patch, duration, and match edit capture.
+- §6.2 match identity and duration/patch metadata; optional unknown fields remain absent.
+- §10 provenance boundaries and explicit unavailable/unknown values.
+- §12 local persistence, schema, and verification.
 
 ### Decision
 - [ ] Approve
