@@ -1,5 +1,9 @@
 package com.kiisafezone.mip.data.local
 
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.kiisafezone.mip.domain.MatchEvent
 import com.kiisafezone.mip.domain.MatchEventId
 import com.kiisafezone.mip.domain.MatchEventSource
@@ -10,9 +14,20 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 
-/** Room-shaped row; payload is stored as JSON text in SQLite. */
+@Entity(
+    tableName = "match_events",
+    foreignKeys = [
+        ForeignKey(
+            entity = MatchSessionRecord::class,
+            parentColumns = ["id"],
+            childColumns = ["matchId"],
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
+    indices = [Index(value = ["matchId", "gameTimeMs", "recordedAtEpochMs", "id"])],
+)
 internal data class MatchEventRecord(
-    val id: String,
+    @PrimaryKey val id: String,
     val matchId: String,
     val type: String,
     val gameTimeMs: Long,
@@ -25,7 +40,7 @@ internal data class MatchEventRecord(
     val schemaVersion: Int,
 )
 
-private val recordJson = Json { encodeDefaults = true }
+private val recordJson = Json { encodeDefaults = true; ignoreUnknownKeys = true }
 
 internal fun MatchEventRecord.toDomain() = MatchEvent(
     id = MatchEventId(id),

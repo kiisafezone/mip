@@ -4,7 +4,7 @@ This file records implementation work package by package. It does not replace ma
 
 ## Work package 1 — Domain model and event correction contract
 
-**Commit:** pending
+**Commit:** `228e54d1d3d079e7fb8d4fcb58a4cdc227479723`
 
 ### Files changed
 - `shared/domain/src/commonMain/kotlin/com/kiisafezone/mip/domain/MatchSession.kt`
