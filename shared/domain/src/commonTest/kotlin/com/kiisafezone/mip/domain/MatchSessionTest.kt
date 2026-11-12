@@ -1,8 +1,8 @@
 package com.kiisafezone.mip.domain
 
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -31,8 +31,28 @@ class MatchSessionTest {
             status = MatchSessionStatus.COMPLETED,
             gameVersionId = "patch-1",
             notes = "manual review",
+            heroName = "Miya",
+            role = "Gold Lane",
+            result = MatchResult.WIN,
+            mode = "Ranked",
         )
         val json = Json { ignoreUnknownKeys = true }
         assertEquals(session, json.decodeFromString<MatchSession>(json.encodeToString(session)))
+    }
+
+    @Test fun lifecycleTransitionsAreExplicitAndValidated() {
+        val active = MatchSession(MatchSessionId("m1"), 100)
+        val paused = active.pause()
+        assertEquals(MatchSessionStatus.PAUSED, paused.status)
+        assertEquals(MatchSessionStatus.ACTIVE, paused.resume().status)
+        assertEquals(500L, paused.complete(500).endedAtEpochMillis)
+        assertFailsWith<IllegalArgumentException> { paused.pause() }
+        assertFailsWith<IllegalArgumentException> { active.complete(99) }
+    }
+
+    @Test fun matchMetadataMustNotBeBlankWhenPresent() {
+        assertFailsWith<IllegalArgumentException> {
+            MatchSession(MatchSessionId("m1"), 100, heroName = " ")
+        }
     }
 }
