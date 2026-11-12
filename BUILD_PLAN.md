@@ -85,7 +85,6 @@ This is an enabling checkpoint, not an additional product hypothesis or a promis
 
 ## 6. H1 — Capture
 
-<badge-placeholder></badge-placeholder>
 
 **Status:** TESTING  
 **Unlocks:** H2 pre-registration and evaluation only after H1 PASS.  
