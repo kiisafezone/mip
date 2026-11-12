@@ -52,10 +52,16 @@ the shared modules to compile independently of the Android toolchain.
 
 ## Persistence boundary
 
-data:local currently contains only a persistence-shaped record and mapping
-functions. Room entities, DAOs, migrations, and the concrete
-MatchSessionRepository adapter are intentionally deferred to the local
-persistence issue. No Room dependency is introduced into domain or shared core.
+`data:local` is the Android persistence adapter. H1 wires Room entities, DAOs,
+the database, and `RoomMatchRepository` to the shared domain repository ports.
+Room and Android dependencies remain confined to `data:local`; shared domain,
+contracts, and engine code remain platform-neutral.
+
+The initial database schema is version 1. The readable SQL companion is
+`data/local/schema/001_initial.sql`. KSP schema export is configured under
+`data/local/schemas`; generated Room schema output must be produced by the
+Gradle build and reviewed before a production release. No destructive migration
+fallback is enabled.
 
 ## Scope boundaries
 

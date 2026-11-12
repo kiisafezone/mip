@@ -11,6 +11,10 @@
 | gameVersionId | Nullable String | Explicit game patch/data snapshot | Nonblank when present |
 | notes | Nullable String | User-authored session notes | Optional |
 | schemaVersion | Int32 | Serialized session schema | >= 1 |
+| heroName | Nullable String | Manually entered hero | Nonblank when present; required by H1 UI |
+| role | Nullable String | Manually entered role/lane | Nonblank when present; required by H1 UI |
+| result | Nullable Enum | WIN, LOSS, DRAW, UNKNOWN | Explicitly selected in H1 UI |
+| mode | Nullable String | Match mode when known | Nonblank when present |
 
 ## MatchEvent
 
@@ -66,3 +70,20 @@ See docs/GAME_MECHANICS_DATA.md.
 |---|---|---|---|
 | durationMs | Int64 | Configured cooldown | >= 0 |
 | readyAtGameTimeMs | Int64 | Estimated ready time | >= trigger time |
+
+
+## MatchEventRevision
+
+| Field | Type | Meaning | Constraint |
+|---|---|---|---|
+| id | String | Stable correction identifier | Nonblank, unique |
+| eventId | String | Corrected event identifier | Nonblank |
+| matchId | String | Parent match | Nonblank |
+| beforeSnapshotJson | String | Full event snapshot before correction | Nonblank JSON |
+| afterSnapshotJson | String | Full event snapshot after correction | Nonblank JSON |
+| reason | String | Player-provided correction reason | Nonblank |
+| changedAtEpochMs | Int64 | Correction time | >= 0 |
+| schemaVersion | Int32 | Revision schema | >= 1 |
+
+Correction history is retained when an individual event is deleted and is
+removed with its parent match. H1 exports include all revisions for the match.

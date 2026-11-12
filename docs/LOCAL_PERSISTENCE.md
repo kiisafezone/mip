@@ -1,6 +1,6 @@
 # Local-First Session Persistence Design
 
-**Status:** schema and lifecycle design; Room wiring is a subsequent implementation.
+**Status:** H1 Room implementation baseline; verification and generated-schema review remain release checks.
 
 ## 1. Requirements and boundaries
 
@@ -104,8 +104,12 @@ gameTimeMs ASC, recordedAtEpochMs ASC, id ASC.
   deletion is required because no cloud copy exists.
 - Explain export destination and deletion consequences in the UI before action.
 
-## 7. Implementation gate
+## 7. H1 implementation and release checks
 
-Before enabling persistence in a release: add Room entities/DAOs/database,
-commit generated schema JSON, implement the repository adapter, add migration
-and DAO tests, verify process-death recovery, and run Android build/lint/tests.
+Room entities, DAOs, database, repository adapter, and initial persistence
+instrumentation tests are implemented in `data:local`. Before treating H1
+persistence as complete, run the configured Gradle/CI checks, inspect and commit
+the generated Room schema JSON under `data/local/schemas`, and review the
+initial SQL companion against the generated schema. Any future schema change
+must increment the database version and include an explicit tested migration;
+destructive fallback remains disabled.
