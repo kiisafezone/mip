@@ -1,3 +1,7 @@
+> **Product-plan authority (2026-11-13):** The current approved source of truth is [`docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md`](docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). The project-decision bullets below are a historical repository snapshot and do not authorize implementation. The prior locked baseline is preserved at [`docs/archive/PRODUCT_PLAN_V.1.1.0_LOCKED_SOT.md`](docs/archive/PRODUCT_PLAN_V.1.1.0_LOCKED_SOT.md). Follow the current plan's milestone, scope, and approval gates.
+
+---
+
 # MIP — Mobile Legends Intelligence Platform
 
 An Android-first, open-source tactical learning and match-analysis platform.
