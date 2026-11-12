@@ -1,3 +1,7 @@
+> **Document status notice (2026-11-13):** This v1.0.0 product-vision document is retained as historical context only. It is superseded for current product scope, milestones, architecture decisions, and authorization by [`PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md`](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Do not use this file to expand scope or authorize implementation.
+
+---
+
 # MIP — Product Vision & Long-Term Plan
 
 **Document status:** Governing product vision; hypotheses, not a delivery commitment  
