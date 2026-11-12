@@ -276,7 +276,7 @@ This file records implementation work package by package. It does not replace ma
 
 ## Work package 7 — Resolve Android presentation compilation errors
 
-**Commit:** pending
+**Commit:** `d9326ca894379d3a6a1db4ded6b0b6eb3c49c901`
 
 ### Files changed
 - `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchDetailScreen.kt`
