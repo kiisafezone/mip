@@ -343,3 +343,34 @@ This file records implementation work package by package. It does not replace ma
 - [ ] Approve
 - [ ] Reject
 - [ ] Change: ____
+
+
+## Work package 8 — Commit generated Room schema and verify persistence instrumentation
+
+**Commit:** pending
+
+### Files changed
+- `data/local/schemas/com.kiisafezone.mip.data.local.MipDatabase/1.json`
+- `REVIEW.md` (this log)
+
+### Tests run + results
+- CI run [43152112315](https://github.com/kiisafezone/mip/actions/runs/43152112315): `Build and test (JDK 17)` — **success**. The shared/unit/lint/Android build step, Room persistence instrumentation tests, and Room schema artifact upload all completed successfully.
+- Inspected the generated schema JSON: Room database version 1; tables `match_sessions`, `match_events`, and `match_event_revisions`; session fields include hero, role, result, mode, gameVersionId, durationMs; event and revision foreign keys cascade from match_sessions; deterministic event ordering index and revision lookup indexes are present.
+
+### Assumptions
+- This is the initial unreleased H1 database schema, so version 1 is retained.
+- The generated Room schema is the authoritative machine-readable schema; `data/local/schema/001_initial.sql` remains its readable SQL companion.
+
+### Known issues
+- Session metadata revision history is addressed separately in WP9 and will require the next schema version increment before release.
+- Human-device accessibility review and the H1 participant protocol remain outstanding.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 local durable match storage.
+- §6.2 structured event persistence and deterministic ordering.
+- §12 reproducible Room schema export and instrumentation verification.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
