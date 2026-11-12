@@ -47,7 +47,7 @@ fun MatchDetailScreen(
     ) {
         TextButton(onClick = onBack) { Text("← All matches") }
         Text(session.heroName ?: "Match review", style = MaterialTheme.typography.headlineSmall)
-        Text(listOfNotNull(session.role, session.mode, session.gameVersionId, session.durationMs?.let { (it / 60_000).toString() + ":" + ((it / 1_000) % 60).toString().padStart(2, "0") }, session.result?.name).joinToString(" · "))
+        Text(listOfNotNull(session.role, session.mode, session.gameVersionId, session.durationMs?.let { (it / 60_000).toString() + ":" + ((it / 1_000) % 60).toString().padStart(2, '0') }, session.result?.name).joinToString(" · "))
         Text("${events.size} recorded events")
         session.notes?.let { Text(it) }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

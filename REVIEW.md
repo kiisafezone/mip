@@ -240,7 +240,7 @@ This file records implementation work package by package. It does not replace ma
 
 ## Work package 6 — Input validation hardening
 
-**Commit:** pending
+**Commit:** `2528c5d81ec9c10ae829c5e8725cf53a389fe84f`
 
 ### Files changed
 - `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchDetailScreen.kt`
@@ -266,6 +266,42 @@ This file records implementation work package by package. It does not replace ma
 - §6.1 structured key-moment capture with explicit match-relative timestamps.
 - §6.2 missing/unknown times and optional duration remain unavailable rather than fabricated.
 - §10 explicit unavailable states and evidence integrity.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
+
+---
+
+## Work package 7 — Resolve Android presentation compilation errors
+
+**Commit:** pending
+
+### Files changed
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchDetailScreen.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchListScreen.kt`
+
+### Tests run + results
+- CI run [43147188528](https://github.com/kiisafezone/mip/actions/runs/43147188528) reached the Gradle verification task.
+- Shared domain, contracts, and engine tests completed successfully.
+- Android presentation compilation failed because Kotlin `String.padStart` expects a `Char` pad character, but two duration-formatting expressions passed a `String`.
+- This package changes both calls to use a character literal.
+- CI must be rerun against the new head; no overall build pass is claimed.
+
+### Assumptions
+- The compile errors are isolated to the two duration-formatting calls identified in the CI compiler output.
+- No runtime or product behavior change is intended by this correction.
+
+### Known issues
+- Full Android build, lint, Room instrumentation, and Room schema artifact generation remain unverified until the rerun completes.
+- Session metadata edits still do not have a separate before/after revision log; event corrections do.
+- Human-device accessibility review and participant protocol remain outstanding.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 match list and match detail display of recorded metadata.
+- §6.2 display of optional match duration.
+- §12 Android build and configured CI verification.
 
 ### Decision
 - [ ] Approve
