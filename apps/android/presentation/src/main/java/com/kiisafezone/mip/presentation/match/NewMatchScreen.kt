@@ -48,9 +48,21 @@ fun NewMatchScreen(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = { onSave(hero, role, mode, patch, duration, requireNotNull(result), notes) },
-                enabled = hero.isNotBlank() && role.isNotBlank() && result != null,
+                enabled = hero.isNotBlank() && role.isNotBlank() && result != null && isValidOptionalDuration(duration),
             ) { Text("Save match") }
             if (onCancel != null) Button(onClick = onCancel) { Text("Cancel") }
         }
     }
+}
+
+private fun isValidOptionalDuration(value: String): Boolean {
+    if (value.isBlank()) return true
+    val parts = value.trim().split(":")
+    if (parts.size != 2) return false
+    val minutes = parts[0].toLongOrNull() ?: return false
+    val seconds = parts[1].toLongOrNull() ?: return false
+    if (minutes < 0 || seconds !in 0..59) return false
+    return runCatching {
+        Math.multiplyExact(Math.addExact(Math.multiplyExact(minutes, 60L), seconds), 1_000L)
+    }.isSuccess
 }

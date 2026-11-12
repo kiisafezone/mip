@@ -36,7 +36,7 @@ fun MatchDetailScreen(
     onExport: () -> Unit,
 ) {
     var type by remember { mutableStateOf(MatchEventTypes.HERO_DIED) }
-    var time by remember { mutableStateOf("00:00") }
+    var time by remember { mutableStateOf("") }
     var detail by remember { mutableStateOf("") }
     var editingMatch by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
@@ -89,6 +89,7 @@ fun MatchDetailScreen(
         Button(
             onClick = { onAddEvent(type, time, detail); detail = "" },
             modifier = Modifier.fillMaxWidth(),
+            enabled = time.isNotBlank() && (type == MatchEventTypes.HERO_DIED || detail.isNotBlank()),
         ) { Text("Add event") }
 
         MatchTimelineScreen(events, onCorrectEvent, onDeleteEvent)

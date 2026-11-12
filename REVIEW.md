@@ -190,7 +190,7 @@ This file records implementation work package by package. It does not replace ma
 
 ## Work package 5 — Complete H1 match metadata capture
 
-**Commit:** pending
+**Commit:** `34e2251dac026518bcdcac5204e9761e5511e043`
 
 ### Files changed
 - `shared/domain/src/commonMain/kotlin/com/kiisafezone/mip/domain/MatchSession.kt`
@@ -230,6 +230,42 @@ This file records implementation work package by package. It does not replace ma
 - §6.2 match identity and duration/patch metadata; optional unknown fields remain absent.
 - §10 provenance boundaries and explicit unavailable/unknown values.
 - §12 local persistence, schema, and verification.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
+
+---
+
+## Work package 6 — Input validation hardening
+
+**Commit:** pending
+
+### Files changed
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/MatchDetailScreen.kt`
+- `apps/android/presentation/src/main/java/com/kiisafezone/mip/presentation/match/NewMatchScreen.kt`
+
+### Tests run + results
+- No new automated test files in this package.
+- Added UI-level guards so an event cannot be added without an explicitly entered match-relative time.
+- Added UI validation for optional match duration syntax and overflow.
+- CI verification is pending; no pass is claimed yet.
+
+### Assumptions
+- A blank event timestamp means unavailable and must remain unrecorded; it must not default to `00:00`.
+- Optional match duration may remain absent when the player does not know it.
+- UI validation complements, but does not replace, domain validation in the ViewModel and model.
+
+### Known issues
+- Session metadata edits still do not have a separate before/after revision log; event corrections do.
+- Human-device accessibility review remains outstanding.
+- CI and generated Room schema review are pending.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 structured key-moment capture with explicit match-relative timestamps.
+- §6.2 missing/unknown times and optional duration remain unavailable rather than fabricated.
+- §10 explicit unavailable states and evidence integrity.
 
 ### Decision
 - [ ] Approve
