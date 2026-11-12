@@ -1,71 +1,93 @@
-# Technical Requirements Document (TRD)
+# Technical Requirements Document — Release 1
 
-**Version:** 0.1.0-draft | **Status:** Sprint 0 baseline
+**Version:** 1.0.0
+**Status:** Active implementation specification
 
 ## 1. Technology
-- Kotlin; Jetpack Compose + Material 3.
-- Gradle Kotlin DSL, version catalog, Gradle wrapper.
-- Kotlin Multiplatform shared core; initially Android and JVM tests only.
-- Room in Android data adapter; domain interfaces in shared modules.
-- kotlinx.serialization for stable interchange contracts.
-- Constructor injection initially; add DI only when justified.
-- Kotlin test/JUnit; Android instrumentation tests for persistence/UI boundaries.
-- GitHub Actions with supported JDK and Gradle caching.
 
-Pin exact toolchain and dependency versions during bootstrap; do not copy
-unverified version numbers from this draft.
+- Kotlin 2.2.21; Gradle Kotlin DSL; Android Gradle Plugin 8.13.2.
+- Jetpack Compose and Material 3 for Android UI.
+- Kotlin Multiplatform commonMain domain/contracts/engine with Android and JVM targets.
+- Room for Android local persistence; KSP for Room code generation.
+- kotlinx.serialization for domain snapshots and versioned JSON export.
+- Lifecycle ViewModel and coroutines for presentation state.
+- JUnit/Kotlin test for domain and contract tests; Android instrumentation for Room.
+- GitHub Actions with JDK 17 and Android SDK Platform 36.
 
 ## 2. Module responsibilities
-- shared:domain — pure MatchSession, MatchEvent, GameVersion, HeroId, AbilityId,
-  CooldownDefinition; no Android dependencies.
-- shared:contracts — serialized event contracts, enums, provenance, schema version.
-- shared:engine — deterministic ordering and cooldown calculations; no UI, I/O,
-  network, or Android dependencies.
-- shared:test-fixtures — synthetic test data only.
-- apps/android — Compose screens, navigation, lifecycle, user interaction.
-- data:local — Room entities, DAOs, migrations, repository implementations.
-- data:game-data — versioned, human-reviewable mechanics definitions.
 
-## 3. Core models
-MatchSession: id, startedAtEpochMs, nullable endedAtEpochMs, status
-(ACTIVE|PAUSED|COMPLETED), nullable gameVersionId and notes, schemaVersion.
+| Module | Responsibility |
+|---|---|
+| shared:domain | Match/session/event/revision models, invariants, repository ports |
+| shared:contracts | Versioned event and export contracts |
+| shared:engine | Platform-neutral analysis foundation; no Release 1 tactical analysis |
+| apps:android:presentation | Compose screens, UI state, ViewModel |
+| data:local | Room entities, DAOs, database, repositories, export adapter |
+| apps:android | Android application entry point and dependency composition |
 
-MatchEvent: id, matchId, type, gameTimeMs, recordedAtEpochMs, source
-(MANUAL|AUTHORIZED_IMPORT|SYNTHETIC), confidence [0,1], validation
-(UNREVIEWED|CONFIRMED|CORRECTED|REJECTED), nullable actorId, versioned payload,
-schemaVersion.
+Domain code must not import Android, Compose, Room, network, or storage APIs.
 
-CooldownDefinition: gameVersionId, abilityId, durationMs, optional effective
-range, provenance, reviewedAtEpochMs.
+## 3. Domain model
 
-CooldownEstimate: triggerEventId, durationMs, readyAtGameTimeMs, status
-(ESTIMATED|READY_ESTIMATE|INVALIDATED), calculationVersion.
+MatchSession includes stable ID, start/end timestamps, lifecycle status,
+optional game version and notes, hero, role, result, mode, and schema version.
+
+MatchEvent includes stable ID, parent match, string event type, match-relative
+time, recorded wall-clock time, source, confidence, validation status, optional
+actor, JSON payload, and schema version.
+
+MatchEventRevision stores immutable before/after JSON snapshots, correction
+reason, event/match IDs, correction time, and schema version.
 
 ## 4. Event rules
-Store match-relative and wall-clock timestamps. Order by gameTimeMs, then
-recordedAtEpochMs, then stable event ID. Preserve source/confidence. Corrections
-must be auditable. Reject negative timestamps and confidence outside [0,1].
-Unknown optional payload fields should be forward-compatible.
 
-## 5. Cooldown calculation
-readyAtGameTimeMs = trigger.gameTimeMs + definition.durationMs
+- Reject blank IDs/types and negative timestamps.
+- Confidence must be finite and within [0,1].
+- Event order is gameTimeMs ASC, recordedAtEpochMs ASC, id ASC.
+- Manual entries use MANUAL source and are labeled player-reported in UI.
+- Unknown event type strings and optional payload keys remain preserved.
+- A correction updates the event and appends a revision in one Room transaction.
+- Deleting an event leaves its revisions while the parent match exists.
+- Deleting a match cascades to its events and revisions.
 
-Require a matching versioned definition. If missing, return UNAVAILABLE—never
-guess. Invalidate/recompute when a trigger is rejected, deleted, or corrected.
-UI wording must say “estimated ready”. Test boundaries, large durations,
-patch mismatch, and corrections.
+## 5. Persistence
 
-## 6. Persistence and privacy
-Store MVP sessions locally; migrate every schema change. No telemetry by default.
-Export is user-initiated. Do not store screen recordings or game screenshots in MVP.
+Room database v1 contains match_sessions, match_events, and
+match_event_revisions. The Android adapter implements shared domain repository
+ports. Session/event writes are persisted immediately; match deletion is
+cascading and local.
 
-## 7. Initial Android screens
-Home/recent sessions; create session; manual session logger (no overlay);
-event timeline; cooldown estimates; session summary; settings/export/privacy.
-Support accessibility semantics, scalable text, adequate contrast, touch targets,
-and active-session restoration after process death.
+Room schema JSON is exported under data/local/schemas. Every later schema
+change increments the database version and includes a tested Migration.
+Destructive migration fallback is disabled.
+
+## 6. Export
+
+Export is user initiated through Android's document creation flow. The JSON
+envelope includes export schema version, export timestamp, one match, events,
+and correction revisions. No unrelated device data or hidden game state is
+included.
+
+## 7. Android screens
+
+- Recent match list.
+- New/edit match metadata form.
+- Match detail and lifecycle controls.
+- Manual event entry for death, objective/contest, and tactical note.
+- Chronological event timeline with correction and deletion.
+- Factual summary and explicit JSON export.
 
 ## 8. Quality gates
-Run ./gradlew test, ./gradlew lint (when configured), and
-./gradlew assembleDebug. CI fails on compilation or unit-test failure. Pin
-Gradle, JDK, Kotlin, Android Gradle Plugin, and dependencies.
+
+Run:
+
+~~~sh
+./gradlew verifySharedCoreNoAndroidImports
+./gradlew :shared:domain:allTests :shared:contracts:allTests :shared:engine:allTests
+./gradlew :apps:android:testDebugUnitTest :apps:android:lintDebug assembleDebug
+./gradlew :data:local:connectedDebugAndroidTest
+~~~
+
+Room tests must cover deterministic ordering, correction transaction/history,
+event deletion, and cascading match deletion. Do not claim the Release 1 build
+is verified until the CI run completes successfully.

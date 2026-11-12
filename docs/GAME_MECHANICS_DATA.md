@@ -1,9 +1,13 @@
 # Versioned Game Mechanics Data
 
+**Release status:** Future-release foundation; not used for Release 1 calculations.
+
 ## Purpose
 
-Mechanics data is an explicit, reviewable input to analysis. Calculation code must
-not contain permanent cooldown values or substitute values from another patch.
+Mechanics data is an explicit, reviewable input to later timing intelligence.
+Calculation code must not contain permanent cooldown values or substitute
+values from another patch. Release 1 records and reviews manually entered match
+events only; it does not calculate cooldown-ready times.
 
 ## Cooldown definition schema (v1)
 
@@ -20,7 +24,7 @@ not contain permanent cooldown values or substitute values from another patch.
 | provenance.reviewedBy | Nullable String | Nonblank when present |
 | provenance.notes | Nullable String | Context and limitations |
 
-The v1 Kotlin contract is CooldownDefinition in shared:domain. The resolver in
+The Kotlin contract is CooldownDefinition in shared:domain. The resolver in
 shared:engine accepts a nullable game version and returns either an exact
 definition or an explicit unavailable reason.
 

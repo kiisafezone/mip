@@ -2,39 +2,46 @@
 
 ## Module map
 
-MIP keeps product rules independent from Android APIs. Android is the first host,
-but the shared source sets are Kotlin Multiplatform commonMain code with Android
-and JVM targets.
+MIP keeps domain rules independent from Android APIs. Android is the first host;
+shared source sets use Kotlin Multiplatform commonMain code with Android and JVM
+targets.
 
 | Module | Responsibility | May depend on |
 |---|---|---|
-| shared:domain | Core entities, invariants, and repository ports | Kotlin standard library |
-| shared:contracts | Versioned boundary contracts for data exchanged between modules | Kotlin standard library |
-| shared:engine | Platform-neutral deterministic analysis entry points | shared:domain, shared:contracts |
-| apps:android:presentation | Android-facing presentation models and UI adapters | shared:domain |
-| data:local | Local persistence records, Room database/DAO implementations, and repository adapters | shared:domain, Android/Room |
-| apps:android | Android composition root and Compose screens | Presentation, local data, shared APIs |
+| shared:domain | Core entities, invariants, repository/export ports | Kotlin standard library |
+| shared:contracts | Versioned interchange and export contracts | shared:domain |
+| shared:engine | Platform-neutral deterministic analysis | shared:domain, shared:contracts |
+| apps:android:presentation | Compose screens, UI state, ViewModel | shared:domain |
+| data:local | Room entities, DAOs, database, repository and export adapters | shared:domain, shared:contracts, Android/Room |
+| apps:android | Android composition root | presentation, data:local |
 
 ## Dependency direction
-
-Dependencies point inward toward stable domain abstractions:
 
 ~~~text
 apps:android
   ├── apps:android:presentation ──> shared:domain
-  ├── data:local ─────────────────> shared:domain
-  ├── shared:engine ──────────────> shared:domain + shared:contracts
-  └── shared:domain
+  ├── data:local ─────────────────> shared:domain + shared:contracts
+  └── shared APIs
 
-shared:domain    -X-> Android, Compose, Room, network, or storage frameworks
+data:local ──implements──> shared:domain repository/export ports
+shared:domain -X-> Android, Compose, Room, network, or storage frameworks
 shared:contracts -X-> Android or persistence frameworks
-shared:engine   -X-> Android, Compose, Room, network, or storage frameworks
+shared:engine -X-> Android, Compose, Room, network, or storage frameworks
 ~~~
 
-The domain owns repository interfaces (ports); adapters implement those
-interfaces in platform/data modules. UI code must not access Room or persistence
-records directly. The app module is the composition root that wires adapters to
-domain-facing consumers.
+The app module is the composition root: it creates the Room repository and
+export adapter, then injects domain-facing interfaces into the presentation
+ViewModel. UI code does not access Room entities or DAOs directly.
+
+## Release 1 data flow
+
+1. Compose screens collect immutable UI state from MatchSessionViewModel.
+2. The ViewModel validates user input and invokes domain repository ports.
+3. RoomMatchRepository maps domain records to Room rows and persists them.
+4. Event corrections update the current event and append the revision snapshot
+   in one database transaction.
+5. MatchExportService assembles the versioned export contract from the local
+   repositories after explicit user action.
 
 ## Shared-core verification
 
@@ -45,22 +52,16 @@ Run:
 ./gradlew :shared:domain:compileKotlinJvm :shared:contracts:compileKotlinJvm :shared:engine:compileKotlinJvm
 ~~~
 
-The root Gradle task scans Kotlin files under shared/ and fails if a source
-file imports android.* or androidx.*. Android module preBuild tasks depend on
-this guard, so the check runs as part of an Android build. The JVM targets allow
-the shared modules to compile independently of the Android toolchain.
+The root Gradle task rejects Android framework imports from shared Kotlin files.
 
 ## Persistence boundary
 
-data:local currently contains only a persistence-shaped record and mapping
-functions. Room entities, DAOs, migrations, and the concrete
-MatchSessionRepository adapter are intentionally deferred to the local
-persistence issue. No Room dependency is introduced into domain or shared core.
+Room and Android storage APIs are confined to data:local. Domain repository
+interfaces and export ports are platform independent. The Room schema is
+versioned; later schema changes require explicit tested migrations.
 
 ## Scope boundaries
 
-- Match event schemas and event validation belong to the match-contract issue.
-- Versioned game-mechanics definitions belong to the game-data issue.
-- Cooldown estimation behavior belongs to engine implementation work.
-- Live capture, overlays, hidden-state inference, and game automation remain
-  blocked by project policy until exact written authorization exists.
+Release 1 records and reviews player-entered data only. Tactical analysis,
+cooldown calculations, cross-match intelligence, live capture, overlays,
+hidden-state inference, and game automation remain outside this release.

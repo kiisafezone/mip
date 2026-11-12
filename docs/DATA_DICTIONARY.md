@@ -5,12 +5,16 @@
 | Field | Type | Meaning | Constraint |
 |---|---|---|---|
 | id | String | Stable session identifier | Nonblank, unique |
-| startedAtEpochMillis | Int64 | UTC session start time | >= 0 |
-| endedAtEpochMillis | Nullable Int64 | UTC session end time | >= start; required when COMPLETED |
+| startedAtEpochMillis | Int64 | Session creation/start time | >= 0 |
+| endedAtEpochMillis | Nullable Int64 | Completion time | >= start; required when COMPLETED |
 | status | Enum | Session lifecycle | ACTIVE, PAUSED, COMPLETED |
-| gameVersionId | Nullable String | Explicit game patch/data snapshot | Nonblank when present |
-| notes | Nullable String | User-authored session notes | Optional |
+| gameVersionId | Nullable String | Explicit game patch/data version | Nonblank when present |
+| notes | Nullable String | Player-authored match notes | Optional |
 | schemaVersion | Int32 | Serialized session schema | >= 1 |
+| heroName | Nullable String | Recorded hero | Nonblank when present |
+| role | Nullable String | Recorded role/lane | Nonblank when present |
+| result | Nullable Enum | Match outcome | WIN, LOSS, DRAW, UNKNOWN |
+| mode | Nullable String | Match mode | Nonblank when present |
 
 ## MatchEvent
 
@@ -20,49 +24,54 @@
 | matchId | String | Parent session | Nonblank; repository enforces existence |
 | type | String | Event type identifier | Nonblank; unknown types are preserved |
 | gameTimeMs | Int64 | Match-relative time | >= 0 |
-| recordedAtEpochMs | Int64 | UTC record time | >= 0 |
+| recordedAtEpochMs | Int64 | Wall-clock record time | >= 0 |
 | source | Enum | Origin | MANUAL, AUTHORIZED_IMPORT, SYNTHETIC |
-| confidence | Float64 | Event confidence | finite, 0.0–1.0 |
+| confidence | Float64 | Entry confidence | finite, 0.0–1.0 |
 | validation | Enum | Review state | UNREVIEWED, CONFIRMED, CORRECTED, REJECTED |
 | actorId | Nullable String | Optional actor identifier | Nonblank when present |
-| payload | JSON object | Versioned event-specific data | Unknown optional keys are preserved |
+| payload | JSON object | Event-specific data | Unknown optional keys are preserved |
 | schemaVersion | Int32 | Serialized event schema | >= 1 |
 
 ## Initial event types and payloads
 
-| Event type | Required payload fields | Notes |
+| Event type | Required payload fields | Meaning |
 |---|---|---|
-| SPELL_USED | abilityId: nonblank string | A manually logged ability/spell use |
-| HERO_DIED | none in schema v1 | Actor/killer context may be optional payload data |
-| OBJECTIVE_OBSERVED | objectiveId: nonblank string | Observation only; does not imply hidden-state tracking |
-| TACTICAL_NOTE | text: nonblank string | User-authored note |
+| SPELL_USED | abilityId: nonblank string | Manually logged ability/spell use |
+| HERO_DIED | none in schema v1 | Player-reported death; context may be optional |
+| OBJECTIVE_OBSERVED | objectiveId: nonblank string | Manually recorded objective/contest |
+| TACTICAL_NOTE | text: nonblank string | Player-authored note |
 
-Unknown event type strings are retained and reported as unsupported by the v1
-payload validator; they must not crash timeline rendering. Event payload JSON
-objects retain unknown optional keys during serialization.
+Unknown event type strings are retained. Event payload JSON objects retain
+unknown optional keys during serialization.
+
+## MatchEventRevision
+
+| Field | Type | Meaning |
+|---|---|---|
+| id | String | Stable revision identifier |
+| eventId | String | Event being corrected |
+| matchId | String | Parent match |
+| beforeSnapshotJson | String | Complete event snapshot before correction |
+| afterSnapshotJson | String | Complete event snapshot after correction |
+| reason | String | Required player-supplied correction reason |
+| changedAtEpochMs | Int64 | Correction wall-clock timestamp |
+| schemaVersion | Int32 | Revision schema version |
+
+Revisions remain available after an individual event is deleted, until its
+parent match is deleted. Deleting a match cascades to its events and revisions.
+
+## Export contract
+
+MatchExportContract includes the export schema version, export timestamp, one
+MatchSession, its current events, and all correction revisions for that match.
+The export is generated only after an explicit user action.
 
 ## Timeline ordering
 
 Events are ordered by gameTimeMs, then recordedAtEpochMs, then stable event ID.
-This produces deterministic order when multiple events share the same match time.
 
-## Cooldown mechanics data
+## Future-release mechanics data
 
-| Field | Type | Meaning | Constraint |
-|---|---|---|---|
-| gameVersionId | String | Exact game data version | Nonblank; no cross-version fallback |
-| abilityId | String | Stable ability key | Nonblank |
-| durationMs | Int64 | Configured cooldown | >= 0 |
-| provenance | DataProvenance | Source/review trail | Required |
-| schemaVersion | Int32 | Mechanics record schema | >= 1 |
-
-A resolver returns unavailable for unknown game version or missing exact
-version/ability definitions. It must never guess or use hard-coded defaults.
-See docs/GAME_MECHANICS_DATA.md.
-
-## Other fields
-
-| Field | Type | Meaning | Constraint |
-|---|---|---|---|
-| durationMs | Int64 | Configured cooldown | >= 0 |
-| readyAtGameTimeMs | Int64 | Estimated ready time | >= trigger time |
+CooldownDefinition and DataProvenance are reserved for future timing
+intelligence. Release 1 does not calculate cooldown-ready times or provide
+tactical conclusions. See docs/GAME_MECHANICS_DATA.md.
