@@ -68,5 +68,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mip-room-schema
-          path: data/local/schemas/*.json
+          path: data/local/schemas/**/*.json
           if-no-files-found: error

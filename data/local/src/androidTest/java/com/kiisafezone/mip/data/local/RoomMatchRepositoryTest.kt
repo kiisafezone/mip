@@ -74,6 +74,7 @@ class RoomMatchRepositoryTest {
         assertEquals("restart-event", restored.getForMatch(match.id).single().id.value)
         secondDatabase.close()
         context.deleteDatabase(databaseName)
+        Unit
     }
 
     @Test fun correctionAndRevisionAreCommittedTogether() = runBlocking {

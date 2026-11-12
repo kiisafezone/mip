@@ -309,3 +309,37 @@ This file records implementation work package by package. It does not replace ma
 - [ ] Change: ____
 
 ---
+
+
+## Work package 8 — Generate and check in Room schema; repair instrumentation test discovery
+
+**Commit:** pending
+
+### Files changed
+- `.github/workflows/android-ci.yml`
+- `data/local/src/androidTest/java/com/kiisafezone/mip/data/local/RoomMatchRepositoryTest.kt`
+- `data/local/schemas/com.kiisafezone.mip.data.local.MipDatabase/1.json` (to be added after KSP generation and inspection)
+- `REVIEW.md` (this log)
+
+### Tests run + results
+- Prior CI run [43149795542](https://github.com/kiisafezone/mip/actions/runs/43149795542): Gradle verification (shared tests, local unit tests, app unit tests, lint, Android assembly) passed; Room instrumentation failed during JUnit runner initialization because one test method returned the Boolean result of `deleteDatabase` instead of Unit; schema upload failed because the glob did not recurse into Room's package-named schema directory.
+- Fix adds an explicit Unit return and recursive schema artifact glob. A new CI run must generate the schema and verify all instrumentation tests before this package is complete.
+
+### Assumptions
+- Room's KSP schema export is located in a package-named subdirectory beneath `data/local/schemas`, consistent with Room's exported schema layout.
+- Database version remains 1 because this is the initial unreleased H1 schema.
+- No destructive migration fallback is enabled.
+
+### Known issues
+- Generated schema JSON must be downloaded from the new CI run, inspected against Room entities, then committed in this package's final commit.
+- Instrumentation tests remain unverified until the corrected CI run completes.
+
+### BUILD_PLAN.md items addressed (not checked)
+- §6.1 durable local persistence and offline-ready record storage.
+- §6.2 persistent structured match/event data and deterministic ordering.
+- §12 reproducible persistence verification and schema traceability.
+
+### Decision
+- [ ] Approve
+- [ ] Reject
+- [ ] Change: ____
