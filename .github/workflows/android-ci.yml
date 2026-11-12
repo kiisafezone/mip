@@ -18,7 +18,7 @@ jobs:
   verify:
     name: Build and test (JDK 17)
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -40,13 +40,22 @@ jobs:
       - name: Install pinned Android SDK platform and build tools
         run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
-      - name: Verify shared core and run tests, lint, and Android build
+      - name: Verify shared core and run unit tests, lint, and Android build
         run: >-
           ./gradlew --no-daemon
           verifySharedCoreNoAndroidImports
           :shared:domain:allTests
           :shared:contracts:allTests
           :shared:engine:allTests
+          :data:local:testDebugUnitTest
           :apps:android:testDebugUnitTest
           :apps:android:lintDebug
           assembleDebug
+
+      - name: Run Room persistence instrumentation tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          script: ./gradlew --no-daemon :data:local:connectedDebugAndroidTest

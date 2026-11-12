@@ -1,23 +1,21 @@
 # Policy and Compliance Boundary
 
-**Status:** Active engineering guardrail; not legal advice.  
-**Authorization status:** No written Moonton authorization is currently recorded in this repository.  
-**Last reviewed:** 2026-11-11
+**Status:** Active engineering guardrail; not legal advice.
+**Authorization status:** No written Moonton authorization is recorded in this repository.
+**Applies to:** All releases and contributors.
 
 ## Purpose and independence
 
-MIP (Mobile Legends Intelligence Platform) is an independent, open-source coaching
-and match-analysis project. It is not affiliated with, endorsed by, or sponsored
-by Moonton or Mobile Legends: Bang Bang (MLBB).
-
-This document defines the permitted data-acquisition boundary for the MVP and the
-evidence required before that boundary can change. A feature being technically
-possible on Android does not make its data source permitted.
+MIP is an independent, open-source player-controlled match review project. It is
+not affiliated with, endorsed by, or sponsored by Moonton or Mobile Legends:
+Bang Bang (MLBB). A feature being technically possible on Android does not
+make its data source or acquisition method permitted.
 
 ## Current implementation boundary
 
-Until explicit written authorization exists for a specific method, purpose,
-distribution model, and data category:
+Release 1 uses manual player entry and synthetic test data only. Until explicit
+written authorization exists for a specific method, purpose, distribution
+model, and data category:
 
 - Do not automate collection of information from or interaction with MLBB.
 - Do not implement live screen capture or OCR against the running game.
@@ -29,46 +27,40 @@ distribution model, and data category:
   or platform protections.
 - Do not infer publisher permission from Android runtime permissions, public
   availability of data, community practice, app-store approval, or silence.
-- Do not claim that Moonton has approved, partnered with, or endorsed MIP without
+- Do not claim Moonton has approved, partnered with, or endorsed MIP without
   verifiable written evidence supporting that exact claim.
 
-## MVP feature and data-source inventory
+## Release 1 feature and data-source inventory
 
-The MVP is intentionally usable without connecting to, observing, or controlling
-the running game. The following is the approved engineering scope under this
-policy; it is not a statement of publisher endorsement.
-
-| MVP feature | Initial acquisition method | Source classification | Boundary |
+| Feature | Acquisition method | Classification | Boundary |
 |---|---|---|---|
-| Create and manage a match session | User enters session details in MIP | Manual | No automatic game detection |
-| Record match events | User manually enters event type and game-relative time | Manual | No live screen reading or automated event detection |
-| Cooldown estimates | Deterministic calculation from a versioned mechanics dataset whose provenance and rights have been reviewed | Documented/versioned input; synthetic fixtures in tests | Missing, stale, or unverified values must return unavailable; never guess |
-| Event timeline | Derived only from events manually entered by the user or permitted test fixtures | Derived from manual / synthetic | No hidden-state reconstruction |
-| Local session history | Store user-entered MIP records locally | Manual | Local-first; no background game data collection |
-| Basic reports | Deterministic summaries of MIP session records | Derived from manual | Clearly distinguish user-entered facts from estimates |
-| Export | Explicit user action to export MIP-created records | User-controlled export | Review privacy and third-party content before sharing |
-| Automated import of game data or recordings | None in MVP | Blocked pending authorization and rights review | No implementation until the release gate is met |
-| Live capture, OCR, overlays, enemy tracking, memory/packet access, game modification, or input automation | None | Blocked | Prohibited from implementation pending explicit written authorization and review |
+| Create/edit/delete match | User enters match details in MIP | PLAYER-REPORTED | No automatic game detection |
+| Record events | User enters event type and match-relative time | PLAYER-REPORTED | No live screen reading or automated event detection |
+| Event timeline | Ordered from manually entered events | CALCULATED from PLAYER-REPORTED | No hidden-state reconstruction |
+| Local match history | Store MIP-created records on device | PLAYER-REPORTED | No background game data collection |
+| Basic summary | Display stored match metadata and event counts | CALCULATED from PLAYER-REPORTED | No tactical verdicts in Release 1 |
+| Export | Explicit user action exports MIP-created records | PLAYER-CONTROLLED | Review privacy and third-party content before sharing |
+| Synthetic fixtures | Fictional test/demo data | SYNTHETIC | Must never be presented as real match evidence |
+| Mechanics datasets / cooldown intelligence | Not used by Release 1 | Future-release input | Requires provenance, rights, and review before production use |
+| Automated import, live capture, OCR, overlays, enemy tracking, memory/packet access, game modification, or input automation | None | BLOCKED | No implementation pending exact written authorization and policy review |
 
-### Source classifications
+Derived data inherits the restrictions and provenance of its inputs. Release 1
+does not import data from MLBB or connect to the running game.
 
-Use one of these classifications for every data field and feature:
+## Source classifications
 
-- **MANUAL:** Entered directly by the user into MIP. Manual entry must not
-  quietly trigger automated observation or collection from the game.
-- **SYNTHETIC:** Generated test/demo data that is fictional and clearly labeled.
-  It must not be presented as real match evidence.
-- **DOCUMENTED / VERSIONED:** A mechanics value or rule with recorded provenance,
-  version, effective date, and rights/permission review. If provenance or
-  permission is unclear, the value is unavailable for production use.
-- **AUTHORIZED_IMPORT:** Data imported through a method and for a purpose
-  explicitly covered by written authorization and a completed source review.
-  No such source is currently approved or recorded.
-- **BLOCKED:** Any source or acquisition method listed in the implementation
-  boundary, or any source whose permission, terms, or rights remain unresolved.
+Use the product evidence categories where relevant:
 
-A feature may combine sources, but every input must be classified independently.
-Derived data inherits the restrictions and provenance of its inputs.
+- **OBSERVED:** directly observed information with a traceable source.
+- **PLAYER-REPORTED:** information entered or asserted by the player.
+- **IMPORTED:** data supplied through a separately reviewed and authorized import.
+- **SYNTHETIC:** fictional data used for tests or demonstrations.
+- **CALCULATED:** deterministic output computed from recorded inputs and a
+  documented rule.
+- **INFERRED:** interpretation that depends on context and is not directly observed.
+- **RECOMMENDED:** a proposed action based on evidence and an explicitly identified rule.
+- **BLOCKED / UNAVAILABLE:** a source or output that cannot be used because
+  permission, provenance, freshness, or evidence is insufficient.
 
 ## Required source review
 
@@ -77,76 +69,56 @@ Before adding or changing a data source, record:
 1. Source owner, publisher, origin, and exact data categories.
 2. Acquisition method, including whether it is manual, synthetic, imported,
    scraped, captured, or otherwise automated.
-3. Applicable terms of service, license, written permission, and the date/version
-   reviewed.
+3. Applicable terms of service, license, written permission, and date/version reviewed.
 4. Rights to use, modify, store, display, redistribute, and sublicense the data.
-5. Separate rights for screenshots, footage, replays, game assets, names, logos,
-   datasets, and AI/model training, where applicable.
+5. Separate rights for screenshots, footage, game assets, names, logos, datasets,
+   and AI/model training, where applicable.
 6. Privacy implications, personal/player data, consent, retention, deletion,
    and export behavior.
-7. Whether the method interacts with, observes, automates, or extracts data from
-   the running game, and whether it could expose hidden or unavailable game state.
-8. The exact MIP features, platforms, users, and distribution model covered by
-   the permission.
-9. Evidence location, reviewer, decision, review date, and any expiry or conditions.
+7. Whether the method observes, automates, or extracts data from the running
+   game, or could expose hidden/unavailable game state.
+8. Exact features, platforms, users, and distribution model covered by permission.
+9. Evidence location, reviewer, decision, review date, and any conditions.
 
-If any required item is unknown, mark the source **BLOCKED** or unavailable until
-resolved. Do not treat a source as approved merely because it is accessible.
+If any required item is unknown, mark the source BLOCKED or unavailable until
+resolved. Accessibility of a source is not proof of permission.
 
-## Publisher authorization questions and evidence register
+## Publisher authorization register
 
-No written authorization is currently recorded. Before proposing any live-game
-integration, request written clarification through official Moonton channels.
-Ask separately whether permission covers:
-
-- Manual companion use while a match is running.
-- Automated live screen capture and OCR.
-- Floating overlays or contextual in-game assistance.
-- Automated event or game-state collection.
-- Enemy-position or other information not normally available to the player.
-- Post-match processing of user-provided screenshots, recordings, or replays.
-- Use and redistribution of game mechanics data, names, artwork, and other assets.
-- Public open-source publication, commercial distribution, and third-party use.
-- Storage, sharing, dataset creation, and AI/model training.
-
-Authorization for one method, purpose, data category, platform, or distribution
-model does not imply authorization for another.
-
-Evidence register:
+No written authorization is currently recorded.
 
 | Evidence ID | Scope / question | Evidence location | Status |
 |---|---|---|---|
 | AUTH-000 | General publisher authorization for MIP | None recorded | NOT OBTAINED |
 
-Do not replace the status above without linking the actual written evidence and
-recording its scope, date, issuer, and applicable conditions. Do not publish
-private correspondence or personal contact details; retain a suitably redacted
-audit record where necessary.
+Do not change this status without linking actual written evidence and recording
+its scope, date, issuer, and conditions. Authorization for one method, purpose,
+data category, platform, or distribution model does not imply authorization for
+another.
 
 ## Feature-review checklist
 
 Complete this checklist for every new feature, data source, or material change:
 
 - [ ] Feature purpose and user-visible behavior are documented.
-- [ ] Every input field has a named source and one of the classifications above.
-- [ ] Acquisition steps are documented, including permissions and automation.
-- [ ] Source ownership, terms, licenses, and required written permissions are reviewed.
+- [ ] Every input field has a named source and evidence classification.
+- [ ] Acquisition steps and required permissions are documented.
+- [ ] Source ownership, terms, licenses, and written permissions are reviewed.
 - [ ] Storage, retention, deletion, export, and privacy impacts are reviewed.
 - [ ] No blocked method or hidden-state access is involved.
 - [ ] Estimates and derived values retain source/version provenance and are labeled.
 - [ ] Missing, stale, or unverified data fails closed as unavailable.
-- [ ] Any required publisher authorization is written, archived, and explicitly
-  covers the exact method, purpose, data, platform, and distribution.
+- [ ] Required publisher authorization is archived and covers the exact proposed use.
 - [ ] Android/platform and app-store policy reviews are complete where applicable.
 - [ ] A maintainer decision and review date are recorded before implementation.
 
-A reviewer must stop the change if any required answer is unknown. Passing this
-checklist does not replace legal advice or third-party approval.
+A reviewer must stop a change if any required answer is unknown. This checklist
+does not replace legal advice or third-party approval.
 
 ## Release gate for blocked functionality
 
-A blocked feature cannot enter implementation, testing against the live game,
-or release until all of the following are true:
+A blocked feature cannot enter implementation, live-game testing, or release
+until all of the following are true:
 
 1. Written authorization is archived and verified for the exact technical method,
    purpose, data category, platform, and distribution model.
@@ -164,5 +136,5 @@ and publisher authorization is not store approval.
 ## Review cadence
 
 Re-review this policy before each release and whenever a data source, acquisition
-method, feature behavior, platform, or distribution model changes. Check the
-current Google Play Developer Program Policies before each Android release.
+method, feature behavior, platform, or distribution model changes. Check current
+Google Play Developer Program Policies before each Android release.

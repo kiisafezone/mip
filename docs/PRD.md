@@ -1,63 +1,78 @@
-# Product Requirements Document (PRD)
+# Product Requirements Document — Release 1
 
-**Product:** MIP — Mobile Legends Intelligence Platform  
-**Version:** 0.1.0-draft | **Status:** Sprint 0 baseline  
-**Ownership:** Solo developer | **Distribution:** Open source | **Platform:** Android
+**Product:** MIP — Mobile Legends Intelligence Platform
+**Release:** 1 — Functional Match Review Foundation
+**Platform:** Android
+**Status:** Active implementation scope
 
-## 1. Vision
-Help MLBB players understand and improve tactical decisions through structured
-match notes, transparent cooldown calculations, event timelines, and post-session
-coaching insights. The first release is a player-controlled, local-first coaching
-tool—not live-game automation or an information-advantage tool.
+## 1. Objective
+
+Deliver a functional offline match-review workflow. A player can create a match,
+record important events, review the event timeline, correct mistakes, retain
+history locally, and export the record.
+
+Release 1 is not a tactical coaching release and does not claim that the app
+improves rank or win rate.
 
 ## 2. Target user
-A player who wants to record important match events, review tactical decisions,
-and build better habits without a server account or always-on network.
 
-## 3. MVP outcomes
-1. Create and manage match sessions.
-2. Manually record supported events with timestamps.
-3. Calculate estimated cooldown-ready times from versioned, configurable data.
-4. Review a chronological event timeline.
-5. Correct or delete manually entered events.
-6. Generate a basic session summary and retain history locally.
+A Mobile Legends player who wants to manually record and review their own match
+events without connecting MIP to the running game or depending on a server.
+
+## 3. User outcomes
+
+1. Record the basic identity and outcome of a match.
+2. Capture 3–5 meaningful events with match-relative timestamps.
+3. Review events in chronological order.
+4. Correct inaccurate entries without losing the correction trail.
+5. Reopen saved match records after app restart.
+6. Export a portable copy when explicitly requested.
 
 ## 4. Functional requirements
-- FR-01: Start, pause, resume, and finish a session.
-- FR-02: Store mode, patch/data version, start/end time, and notes.
-- FR-03: Record manually entered events, including legitimately observed spell use,
-  observed deaths/objectives, and free-form tactical notes.
-- FR-04: Each event stores source, confidence, match-relative time, creation time,
-  and validation status.
-- FR-05: Cooldown engine computes ready time from trigger time plus configured duration.
-- FR-06: Estimates expose their source data and are visibly labeled as estimates.
-- FR-07: Users can correct event time and remove mistaken events.
-- FR-08: Timeline ordering is deterministic.
-- FR-09: Session data is available offline.
-- FR-10: User can export a local report on demand.
+
+- **FR-01 — Match creation:** hero and role are required; result, mode, and notes
+  are recorded when known.
+- **FR-02 — Match lifecycle:** sessions can be active, paused, resumed, and
+  completed through explicit user actions.
+- **FR-03 — Event capture:** manually record player deaths, objectives/contests,
+  and tactical notes with match-relative timestamps.
+- **FR-04 — Provenance:** retain source, confidence, validation status, and
+  schema version for each event.
+- **FR-05 — Timeline:** show events ordered by match time, recorded time, and
+  stable event ID.
+- **FR-06 — Correction:** allow event timestamp correction with a required
+  reason and immutable before/after snapshots.
+- **FR-07 — Deletion:** allow explicit deletion of events and match records;
+  match deletion also deletes its local events and correction history.
+- **FR-08 — Persistence:** store sessions, events, and revisions locally using
+  Room; core workflows do not require network access.
+- **FR-09 — Recovery:** active and paused sessions remain available after app
+  process restart; the app does not invent elapsed game time.
+- **FR-10 — Summary:** show recorded match metadata and event counts only.
+- **FR-11 — Export:** export one match as a versioned JSON document, including
+  provenance and correction history, after explicit user action.
 
 ## 5. Non-functional requirements
-- No account required; local-first; minimal personal-data collection.
-- Versioned, migratable persistence.
-- Domain logic independent of Compose and Android framework.
-- Deterministic, unit-tested calculations.
-- UI distinguishes observed facts, user-entered data, and estimates.
-- App must not disrupt or automate gameplay.
 
-## 6. MVP non-goals
-No live screen capture/OCR, floating overlay, memory reading, code injection,
-packet interception, game modification, input automation, bot behavior, hidden
-enemy tracking, matchmaking, social network, cloud account, or paid service.
-No claim of official MLBB affiliation or endorsement.
+- No account, cloud sync, telemetry, or network dependency.
+- Domain models and repository ports remain independent of Android APIs.
+- Persistence schema changes use explicit, tested migrations.
+- Corrections and exports preserve source and audit information.
+- Unknown event type strings and optional payload keys are preserved.
+- Invalid data is surfaced safely; never silently replaced with guessed values.
+- UI clearly labels manual entries as player-reported.
+- Touch targets, labels, and text remain usable on Android phone screens.
 
-## 7. Success metrics
-- Saved events survive app restart in test scenarios.
-- Cooldown arithmetic matches configured fixtures exactly.
-- Equal-time timeline ordering is stable.
-- Core session flows work without network.
-- Every estimate is distinguished from an observed event.
+## 6. Release 1 non-goals
 
-## 8. Release gates
-A: Sprint 0 scope and policy review. B: Android shell and persistence tests.
-C: Event engine tests. D: MVP usability review. Any future live-data adapter
-requires a separate written authorization review.
+No cooldown estimates, tactical verdicts, coaching recommendations, cross-match
+pattern detection, player scoring, live capture/OCR, overlays, hidden-state
+access, enemy tracking, gameplay automation, accounts, cloud services, or social
+features.
+
+## 7. Acceptance criteria
+
+A Release 1 build is complete only when all requirements in the root
+[PLAN.md](../PLAN.md) Definition of Done are met, automated tests pass, the
+Android build and lint pass, and the implementation has been reviewed before
+merge.

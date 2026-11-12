@@ -1,191 +1,126 @@
-# MIP — Product Vision & Long-Term Plan
+# MIP — Fixed Product Plan
 
-**Document status:** Governing product vision; hypotheses, not a delivery commitment  
-**Version:** 1.0.0  
-**Platform:** Android-first  
+**Version:** 1.0.0
+**Status:** Approved product direction
+**Platform:** Android-first
 **Product:** Mobile Legends Intelligence Platform
 
-## 1. Product thesis
+## 1. Product vision
 
-Players can see match outcomes, but often struggle to understand the decisions and situations that produced them. MIP aims to help players move from match records to evidence-grounded tactical understanding and, eventually, better in-game decisions.
+MIP helps Mobile Legends: Bang Bang players understand their match decisions
+through structured review, evidence-grounded tactical intelligence, and
+measurable personal improvement.
 
-MIP is an independent, player-controlled companion for reviewing matches. It is not a gameplay automation tool, a source of hidden information, or a substitute for player judgment.
+MIP is a player-controlled companion. It is not a gameplay automation tool,
+a source of hidden information, or a substitute for player judgment.
 
-**Core problem:** players know that a match went badly, but may not know which specific, reviewable situations contributed to the outcome or what they could change next time.
+## 2. Product principles
 
-The product thesis is a hypothesis to validate—not a claim that MIP already improves performance.
+1. **Evidence before advice:** every conclusion must be traceable to its inputs.
+2. **Player-controlled capture:** players choose what to record and when.
+3. **Transparent uncertainty:** missing, stale, contradictory, or insufficient
+   evidence must remain explicit.
+4. **Local-first:** core review works offline and does not require an account.
+5. **Explainable intelligence:** calculations and rules are deterministic,
+   versioned, and testable where practical.
+6. **No hidden advantage:** never expose information unavailable through
+   permitted play.
+7. **Measurable improvement:** distinguish recorded activity, stated intention,
+   observed behavior change, and retention.
 
-## 2. Users and problems
+## 3. Evidence classifications
 
-MIP may serve:
-- Casual players who want to improve but do not know what to practice.
-- Competitive and ranked players who want structured review.
-- Solo-queue players who want to examine their own decisions without depending on teammates' explanations.
-- Aspiring high-rank players who want to identify recurring, actionable mistakes.
+| Classification | Meaning |
+|---|---|
+| OBSERVED | A fact directly observed and recorded with a traceable source |
+| PLAYER-REPORTED | Information entered or asserted by the player |
+| IMPORTED | Data supplied through a separately reviewed and authorized import |
+| SYNTHETIC | Fictional data used for tests or demonstrations |
+| CALCULATED | Deterministic output computed from recorded inputs and a documented rule |
+| INFERRED | Interpretation that depends on context and is not directly observed |
+| RECOMMENDED | A proposed action based on evidence and an explicitly identified rule |
 
-The problems MIP may address:
-1. **Unactionable feedback:** a result or KDA does not explain the decisions behind it.
-2. **Forgotten events:** important deaths, spell uses, rotations, and objective moments are hard to recall later.
-3. **Timing awareness:** players may not remember relevant cooldown and objective timings.
-4. **Repeated mistakes:** similar situations may recur across matches without being recognized.
-5. **Limited self-analysis:** aggregate statistics rarely explain the context of an individual decision.
-6. **Fragmented review:** match notes, timelines, statistics, and learning material are scattered.
+A derived conclusion must link to its supporting inputs and rule/version.
+Correlation is not causation. Estimates and inferences must never be presented
+as observed facts. When evidence is insufficient, report that limitation.
 
-These are problem hypotheses. Research and testing may narrow or change the target problem.
+## 4. Release roadmap
 
-## 3. Product principles
+### Release 1 — Functional Match Review Foundation
 
-1. **Evidence before advice.** Never present an inference or estimate as an observed fact.
-2. **Narrow rules before broad coaching.** A small, testable rule is preferable to vague tactical scoring.
-3. **Player-controlled capture.** The player decides what to record and when.
-4. **Transparent uncertainty.** Show source, confidence, limitations, and unavailable states.
-5. **Local-first by default.** V1 works offline and does not require an account or backend.
-6. **No hidden advantage.** MIP must not expose information unavailable to the player through permitted play.
-7. **Earn every release.** A capability is built only when the preceding hypothesis has passed.
-8. **Measure behavior, not enthusiasm alone.** Stated interest and novelty are weaker evidence than repeated voluntary use and observed behavior change.
+Establish reliable manual match capture and review:
+- Structured match metadata: hero, role, result, mode, timing, and notes.
+- Structured match events with match-relative timestamps and provenance.
+- Deterministic chronological timeline.
+- Match/event editing and deletion; corrections retain an audit trail.
+- Local persistence, offline operation, and recovery after app restart.
+- Basic factual match summary and explicit versioned export.
 
-## 4. Evidence model
+Release 1 is a foundation. It does not include tactical verdicts or coaching.
 
-Every input and conclusion must preserve its evidence category:
+### Release 2 — Tactical Intelligence
 
-| Category | Meaning | Example |
-|---|---|---|
-| OBSERVED | Directly recorded observation with a traceable source | A player-entered death timestamp |
-| USER-REPORTED | A statement or event entered by the player | Player's note about a rotation |
-| DERIVED | Deterministic result computed from recorded inputs | A death occurred within 30 seconds before a recorded objective contest |
-| INFERRED | Interpretation that depends on context or a rule | A situation may indicate a positioning issue |
-| ESTIMATED | Approximation based on documented/versioned data | Estimated cooldown-ready time |
-| SYNTHETIC | Fictional data used only for tests or demonstrations | Test match fixture |
-| UNAVAILABLE | Evidence is missing, stale, contradictory, or insufficient | No reliable timestamp for a required event |
+Introduce narrowly scoped, evidence-based tactical analysis:
+- Analyze only supported situations with defined input requirements.
+- Use deterministic, versioned rules and mechanics data where appropriate.
+- Explain supporting evidence, uncertainty, and limitations.
+- Avoid unsupported causal claims and broad player ratings.
 
-Derived and inferred outputs must link to their supporting inputs and rule version. A temporal correlation is not proof of causation. When evidence is insufficient, MIP must say so rather than guess.
+### Release 3 — Cross-Match Intelligence
 
-## 5. Hypothesis-led product progression
+Build player-specific understanding across multiple recorded matches:
+- Compare comparable situations and events.
+- Identify recurring strengths and mistakes only when evidence is sufficient.
+- Show sample size, confidence, and limitations.
+- Track changes without presenting correlation as proof of causation.
 
-The stages below describe possible future capabilities. They are not promises or automatic release commitments.
+### Release 4 — Personal Improvement System
 
-| Stage | Hypothesis | Potential capability | Unlock condition |
-|---|---|---|---|
-| H1 — Capture | Players will consistently record matches when capture is fast and useful enough | Match record, simple event timeline, edit/delete, local save, export | H1 validation protocol passes |
-| H2 — Understanding | A narrowly defined tactical rule can produce accurate, contextually useful conclusions | One pre-registered tactical rule with evidence and limitations | H1 passes; H2 rule and evaluation are pre-registered |
-| H3 — Behavior | A recommendation based on credible analysis changes a targeted player behavior | One targeted, measurable recommendation | H2 passes; behavioral test is pre-registered |
-| H4 — Retention | Players continue using MIP because it provides recurring value | Repeat review and improvement workflow | H3 passes; retention test is pre-registered |
+Turn validated insights into a measured improvement workflow:
+- Prioritize a small number of evidence-backed improvement areas.
+- Define practice objectives and measurable behaviors.
+- Reassess later matches against a clear baseline.
+- Distinguish intention, practice completion, behavior change, and sustained progress.
 
-**Progression rule:** passing one stage only unlocks the next test. It is never evidence that a later hypothesis is true.
+## 5. Technical direction
 
-H1 passing means **capture validated**, not product validated. H2 agreement does not establish behavior change. H3 behavior change does not by itself establish durable retention.
+- Android-first application using Kotlin and Jetpack Compose.
+- Kotlin Multiplatform shared domain/contracts/engine where it provides clear
+  reuse and testability.
+- Room for local Android persistence.
+- Offline-first operation; no backend or account required for the initial release.
+- Deterministic domain behavior and automated tests.
+- Versioned data contracts and explicit schema migrations.
+- Keep UI, domain rules, and persistence responsibilities separated.
 
-### H1 — Capture
+## 6. Privacy and compliance
 
-The first build is intentionally small:
-- Create a match record with hero, role, result, and essential match metadata.
-- Record 3–5 key moments, including structured death and objective events with match-relative timestamps.
-- Review a simple chronological timeline.
-- Edit and delete records.
-- Save locally and work offline.
-- Export recorded match data on explicit user request.
+Initial data acquisition is player-controlled manual entry and clearly labeled
+synthetic test data. Imported sources require separate written authorization,
+rights review, provenance, and maintainer approval.
 
-No coaching, tactical verdicts, cross-match pattern detection, or elaborate summaries are required for H1.
+Do not implement automated live capture/OCR, overlays, process-memory inspection,
+packet interception, game modification, input automation, hidden-state inference,
+or automated enemy tracking without exact written authorization and a separate
+policy review covering method, purpose, data, platform, and distribution.
 
-The detailed participant protocol, measurements, pass/fail rules, and Definition of Done live in the root [PLAN.md](../PLAN.md). H1 results must be reported as capture validation only.
+Minimize personal data. Explain local storage, export, and deletion. Accounts,
+cloud sync, telemetry, and sharing are not Release 1 requirements.
 
-### H2 — Understanding
+## 7. Governance
 
-H2 tests one tactical rule, not a general coaching engine. A candidate experiment is identifying a player's death within 30 seconds before a manually recorded Turtle contest. The exact event definitions, eligible cases, exclusions, false-positive/false-negative adjudication, minimum sample, and pass threshold must be registered before H2 implementation.
+- Root [PLAN.md](../PLAN.md) is the current execution authority.
+- This document describes the product roadmap; it does not authorize future
+  release implementation.
+- Changes remain small, reviewable, and traceable to approved scope.
+- Do not merge a pull request without explicit maintainer approval.
+- A completed feature is not evidence of tactical effectiveness or player
+  improvement; those claims require separate evaluation.
 
-The output must describe the recorded temporal relationship—not claim that the death caused the objective loss, prove a late rotation, or label an engagement as bad without validated evidence.
+## 8. Success criteria by release
 
-A domain-knowledgeable MLBB reviewer should review the rule and disputed cases. Player agreement is necessary feedback, but must not be treated as objective ground truth by itself.
-
-### H3 — Behavior
-
-H3 tests one recommendation and one observable target behavior. It compares later matches against a pre-defined baseline, uses comparable situations where possible, and records confounders and sample limitations. A stated intention to improve is not a behavior-change result.
-
-### H4 — Retention
-
-H4 tests whether players continue voluntarily after novelty fades and because they perceive recurring value. Journaling habit, reminders, and social pressure must be distinguished from use motivated by useful analysis.
-
-## 6. Data capture and future intelligence
-
-H1 should capture only a small number of fields that make later evaluation possible without increasing capture burden unnecessarily:
-- Match identity, duration, mode/patch when known, hero, role, and result.
-- Event type and match-relative timestamp.
-- Objective type and timestamp, including a clearly defined contest/engagement marker if the H2 rule requires it.
-- Event source, confidence/validation status, and optional player context.
-- Record creation/edit history sufficient to distinguish original entry from later correction.
-
-Do not collect fields merely because they might someday be useful. Every field must have a current product or evaluation purpose.
-
-## 7. Data acquisition, privacy, and compliance
-
-MIP remains usable without connecting to, observing, or controlling the running game.
-
-Permitted initial direction:
-- Manual player-entered records.
-- Synthetic fixtures clearly labeled as fictional.
-- Documented/versioned mechanics data only after provenance, rights, and permission review.
-- Local processing, local history, and explicit user-controlled export.
-
-Do not implement automated live capture/OCR, overlays, memory or packet inspection, game modification, input automation, hidden-state inference, or automated enemy tracking unless exact written authorization and the project's separate policy review explicitly permit the specific method, data, purpose, platform, and distribution model.
-
-Android permissions, public availability, community practice, and app-store approval are not substitutes for publisher authorization. Follow [Policy and Compliance](POLICY_AND_COMPLIANCE.md). Derived outputs inherit the restrictions and provenance of their inputs.
-
-Minimize personal data. Explain what is stored and exported. Provide user control over correction and deletion. Cloud sync, accounts, telemetry, and sharing are not V1 requirements and require separate product, privacy, and security review.
-
-## 8. Technical direction
-
-The product is Android-first and local-first. The existing repository uses Kotlin, Jetpack Compose, and a Kotlin Multiplatform shared core. Retain or simplify that structure based on measured V1 delivery value—not architectural preference.
-
-Before expanding the stack:
-- Confirm which shared-core modules are actually consumed by V1.
-- Compare the cost of keeping the shared core with the cost and risk of an Android-only implementation.
-- Keep domain logic independent of UI and persistence where that separation provides practical value.
-- Avoid adding Room, abstractions, modules, or dependencies without a concrete V1 requirement.
-- Preserve deterministic tests and clear persistence boundaries.
-
-This document does not mandate a backend, account system, live integration, or cross-platform release.
-
-## 9. Explicit non-goals unless separately validated and approved
-
-- A full tactical coaching engine in the first build.
-- Broad tactical ratings or unsupported labels such as "bad player", "bad rotation", or "late rotation".
-- Cross-match pattern claims without adequate player-specific data.
-- Automatic match capture or live-game assistance.
-- Hidden enemy tracking or information not legitimately available to the player.
-- Social network, matchmaking, leaderboard, cloud account, or paid service.
-- Claims of improved win rate or rank without an appropriate evaluation.
-
-## 10. Product quality principles
-
-- A player can understand where each displayed fact came from.
-- Corrections do not silently erase the distinction between original and corrected information.
-- Missing or contradictory evidence produces an explicit unavailable state.
-- Timelines are deterministic and chronological.
-- Local data survives normal app restarts and is exportable by the user.
-- Core workflows work offline.
-- Tactical rules are versioned, testable, reviewed, and explainable.
-- No release presents correlation as causation or estimates as facts.
-
-## 11. Governance and decision rules
-
-Keep governance lightweight:
-- One concise execution plan defines the current hypothesis, scope, next step, and Definition of Done.
-- Each hypothesis has a pre-registered test and explicit pass/fail/inconclusive outcome.
-- Scope changes are recorded in the plan before implementation.
-- Compliance-sensitive features require a documented review before implementation.
-- A plan approval is not an implementation or merge approval.
-- A passing experiment unlocks a test, not an automatic feature expansion.
-
-## 12. Success is evidence, not a feature count
-
-MIP is successful only if its hypotheses are supported by observed results:
-- H1: players reliably capture matches with acceptable effort.
-- H2: a narrow analysis rule is accurate and contextually useful.
-- H3: recommendations measurably change targeted behavior.
-- H4: players return voluntarily because the demonstrated value persists.
-
-Do not report H1 as proof of tactical value, H2 as proof of behavior change, or H3 as proof of long-term retention.
-
----
-
-**Current execution authority:** the root [PLAN.md](../PLAN.md) is the sole source for the active build scope and current hypothesis status. If this vision conflicts with the execution plan, do not silently expand scope; revise the execution plan and obtain maintainer approval first.
+- **Release 1:** records are reliable, editable, recoverable, reviewable, and exportable.
+- **Release 2:** supported tactical rules are accurate and contextually useful.
+- **Release 3:** recurring patterns are supported by adequate player-specific data.
+- **Release 4:** recommendations lead to measurable behavior change and sustained
+  improvement, not merely stated intent.

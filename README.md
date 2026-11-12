@@ -1,52 +1,54 @@
 # MIP — Mobile Legends Intelligence Platform
 
-An Android-first, open-source tactical learning and match-analysis platform.
-MIP is designed as a local-first coaching tool. It does not modify MLBB, automate
-gameplay, inspect process memory, intercept packets, or reveal hidden game state.
+MIP is an independent, Android-first match review and tactical learning platform.
+Release 1 provides a player-controlled way to record match details and key
+moments, review a chronological timeline, preserve corrections, store records
+locally, and export them on request.
 
-## Project decisions
-- Solo-maintained, open-source project
-- Android first; Kotlin, Jetpack Compose, Kotlin Multiplatform shared core
-- Local-first and offline-capable; backend deferred
-- MVP: match sessions, manual event logging, versioned cooldown estimates,
-  event timeline, local history, and basic reports
-- Live-match integrations and overlays are blocked pending explicit written authorization
+**Release 1 does not provide tactical verdicts or claim to improve win rate.**
+It establishes reliable match records for later, separately validated releases.
 
-## Planned layout
-```text
-apps/android/       Android app, UI, and feature modules
-shared/             domain, contracts, engine, synthetic test fixtures
-data/local/         Room persistence adapter
-data/game-data/     versioned mechanics definitions with provenance
-docs/               product, technical, architecture, policy, and sprint documentation
-.github/            issue templates and CI workflows
-```
+## Current release: Release 1 — Functional Match Review Foundation
 
-## Android build
+- Create, review, edit, and delete match records.
+- Record player-reported death, objective, and tactical-note events with match time.
+- Review a deterministic chronological event timeline.
+- Preserve event corrections with before/after snapshots and a reason.
+- Store match records on-device using Room; no account or network is required.
+- Export one match and its event/provenance history as versioned JSON.
 
-See [Android setup and build instructions](docs/ANDROID_SETUP.md). With JDK 17
-and Android SDK Platform 36 installed, run:
+## Product roadmap
 
-```sh
-./gradlew assembleDebug
-```
+1. **Release 1 — Functional Match Review Foundation:** structured manual capture, timeline, local history, correction, and export.
+2. **Release 2 — Tactical Intelligence:** evidence-based tactical analysis and supported timing intelligence.
+3. **Release 3 — Cross-Match Intelligence:** recurring patterns, comparisons, and measured progress.
+4. **Release 4 — Personal Improvement System:** priorities, practice objectives, and reassessment.
 
-See [CI documentation](docs/CI.md) for automated verification and the
-[contribution guide](CONTRIBUTING.md) for development workflow.
+Only Release 1 is in the current implementation scope. See [PLAN.md](PLAN.md)
+and [Release 1 execution checklist](docs/releases/RELEASE_1_EXECUTION.md).
+
+## Architecture
+
+- Android: Kotlin, Jetpack Compose, lifecycle-aware presentation.
+- Shared domain/contracts/engine: Kotlin Multiplatform; domain logic stays independent of Android.
+- Local data: Room database and repository adapters.
+- Offline-first: no backend, account, telemetry, or live-game connection.
+
+See [Architecture](docs/ARCHITECTURE.md), [Android setup](docs/ANDROID_SETUP.md),
+and [CI](docs/CI.md).
 
 ## Compliance boundary
 
-Until Moonton explicitly authorizes a specific method and use in writing, do not
-implement automated live-match capture/OCR, overlays, hidden enemy tracking,
-memory or packet inspection, game modification, or input automation. Android
-permissions are not publisher authorization. See
+MIP does not modify MLBB, automate gameplay, inspect process memory, intercept
+packets, read hidden game state, or provide live overlays. All Release 1 match
+information is entered by the player. See
 [Policy and Compliance](docs/POLICY_AND_COMPLIANCE.md).
 
-MIP is independent and is not affiliated with, endorsed by, or sponsored by Moonton
-or Mobile Legends: Bang Bang.
+MIP is independent and is not affiliated with, endorsed by, or sponsored by
+Moonton or Mobile Legends: Bang Bang.
 
 ## License
 
-Original MIP code and documentation are licensed under Apache-2.0. This does not
-license third-party game assets, trademarks, or publisher content. See
+Original MIP code and documentation are licensed under Apache-2.0. This does
+not license third-party game assets, trademarks, or publisher content. See
 [LICENSE](LICENSE) and [Licensing scope](docs/LICENSING.md).
