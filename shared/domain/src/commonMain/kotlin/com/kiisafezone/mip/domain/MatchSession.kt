@@ -47,21 +47,5 @@ data class MatchSession(
         }
     }
 
-    fun pause(): MatchSession {
-        require(status == MatchSessionStatus.ACTIVE) { "Only an active session can be paused." }
-        return copy(status = MatchSessionStatus.PAUSED)
-    }
-
-    fun resume(): MatchSession {
-        require(status == MatchSessionStatus.PAUSED) { "Only a paused session can be resumed." }
-        return copy(status = MatchSessionStatus.ACTIVE)
-    }
-
-    fun complete(endedAtEpochMillis: Long): MatchSession {
-        require(status != MatchSessionStatus.COMPLETED) { "Session is already completed." }
-        require(endedAtEpochMillis >= startedAtEpochMillis) { "End time cannot precede start time." }
-        return copy(status = MatchSessionStatus.COMPLETED, endedAtEpochMillis = endedAtEpochMillis)
-    }
-
     companion object { const val CURRENT_SCHEMA_VERSION: Int = 1 }
 }

@@ -40,16 +40,6 @@ class MatchSessionTest {
         assertEquals(session, json.decodeFromString<MatchSession>(json.encodeToString(session)))
     }
 
-    @Test fun lifecycleTransitionsAreExplicitAndValidated() {
-        val active = MatchSession(MatchSessionId("m1"), 100)
-        val paused = active.pause()
-        assertEquals(MatchSessionStatus.PAUSED, paused.status)
-        assertEquals(MatchSessionStatus.ACTIVE, paused.resume().status)
-        assertEquals(500L, paused.complete(500).endedAtEpochMillis)
-        assertFailsWith<IllegalArgumentException> { paused.pause() }
-        assertFailsWith<IllegalArgumentException> { active.complete(99) }
-    }
-
     @Test fun matchMetadataMustNotBeBlankWhenPresent() {
         assertFailsWith<IllegalArgumentException> {
             MatchSession(MatchSessionId("m1"), 100, heroName = " ")
