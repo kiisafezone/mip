@@ -1,71 +1,157 @@
 # Technical Requirements Document (TRD)
 
-**Version:** 0.1.0-draft | **Status:** Sprint 0 baseline
+**Document scope:** H1 — Capture  
+**Status:** Current implementation reference; technical decisions remain subject
+to the root execution plan  
+**Execution authority:** [root PLAN.md](../PLAN.md)
 
-## 1. Technology
-- Kotlin; Jetpack Compose + Material 3.
-- Gradle Kotlin DSL, version catalog, Gradle wrapper.
-- Kotlin Multiplatform shared core; initially Android and JVM tests only.
-- Room in Android data adapter; domain interfaces in shared modules.
-- kotlinx.serialization for stable interchange contracts.
-- Constructor injection initially; add DI only when justified.
-- Kotlin test/JUnit; Android instrumentation tests for persistence/UI boundaries.
-- GitHub Actions with supported JDK and Gradle caching.
+## 1. Technology in the current repository
 
-Pin exact toolchain and dependency versions during bootstrap; do not copy
-unverified version numbers from this draft.
+The current implementation uses:
 
-## 2. Module responsibilities
-- shared:domain — pure MatchSession, MatchEvent, GameVersion, HeroId, AbilityId,
-  CooldownDefinition; no Android dependencies.
-- shared:contracts — serialized event contracts, enums, provenance, schema version.
-- shared:engine — deterministic ordering and cooldown calculations; no UI, I/O,
-  network, or Android dependencies.
-- shared:test-fixtures — synthetic test data only.
-- apps/android — Compose screens, navigation, lifecycle, user interaction.
-- data:local — Room entities, DAOs, migrations, repository implementations.
-- data:game-data — versioned, human-reviewable mechanics definitions.
+- Kotlin and Gradle Kotlin DSL with the repository version catalog.
+- Jetpack Compose and Material 3 for Android UI.
+- Kotlin Multiplatform shared source sets for domain/contracts/engine code,
+  currently targeting Android and JVM where configured.
+- Room and KSP in the Android local-data adapter.
+- kotlinx.serialization for domain serialization and versioned JSON export.
+- Android Lifecycle ViewModel and coroutines for presentation state.
+- Kotlin/JUnit tests for shared logic and Android instrumentation tests for
+  Room persistence.
+- GitHub Actions with the repository's configured JDK and Android SDK.
 
-## 3. Core models
-MatchSession: id, startedAtEpochMs, nullable endedAtEpochMs, status
-(ACTIVE|PAUSED|COMPLETED), nullable gameVersionId and notes, schemaVersion.
+The root `PLAN.md` contains an explicit technical decision checkpoint:
+compare retaining the existing Kotlin Multiplatform modules with a simpler
+Android-only structure using delivery effort, testability, and migration cost.
+That decision is not recorded as complete by this document. Do not treat the
+existing module layout as proof that KMP is necessary or as authorization to
+expand shared modules. Record the evidence-backed decision before expanding
+the architecture.
 
-MatchEvent: id, matchId, type, gameTimeMs, recordedAtEpochMs, source
-(MANUAL|AUTHORIZED_IMPORT|SYNTHETIC), confidence [0,1], validation
-(UNREVIEWED|CONFIRMED|CORRECTED|REJECTED), nullable actorId, versioned payload,
-schemaVersion.
+## 2. Current module responsibilities
 
-CooldownDefinition: gameVersionId, abilityId, durationMs, optional effective
-range, provenance, reviewedAtEpochMs.
+| Module | Current responsibility |
+|---|---|
+| `shared:domain` | Match/session/event domain models, invariants, repository ports |
+| `shared:contracts` | Versioned event and export boundary contracts |
+| `shared:engine` | Platform-neutral analysis foundation; H1 does not authorize cooldown or tactical analysis |
+| `apps:android:presentation` | Compose presentation, UI state, and ViewModel |
+| `data:local` | Room entities, DAOs, database, local repository adapter, and export adapter |
+| `apps:android` | Android application entry point and dependency composition |
 
-CooldownEstimate: triggerEventId, durationMs, readyAtGameTimeMs, status
-(ESTIMATED|READY_ESTIMATE|INVALIDATED), calculationVersion.
+Domain code must not import Android, Compose, Room, network, or storage APIs.
+The UI must not access Room records or DAOs directly. Keep dependencies directed
+toward domain abstractions.
+
+These are descriptions of the current repository layout, not a decision that
+every module is required for H1.
+
+## 3. H1 domain data
+
+### MatchSession
+
+The current match-session model includes:
+
+- Stable session ID.
+- Start timestamp and nullable end timestamp.
+- Lifecycle status enum (`ACTIVE`, `PAUSED`, `COMPLETED`).
+- Optional game-version ID and notes.
+- Hero, role, result, and mode metadata.
+- Schema version.
+- Optional `durationMs` match-duration field.
+
+The model validates non-negative start/end timestamps, end time not preceding
+start time, positive schema version, nonblank optional metadata, non-negative
+duration, and consistency between COMPLETED status and end timestamp.
+
+The presence of lifecycle status values does not make pause/resume/complete
+transition controls an H1 requirement. Those methods and associated UI actions
+remain deferred pending maintainer decision because they are outside the root
+`PLAN.md` H1 “Build only” list.
+
+### MatchEvent
+
+The event model includes a stable ID, parent match ID, event type,
+match-relative time, recorded wall-clock time, source, confidence, validation
+status, optional actor, payload, and schema version.
+
+H1 event capture is limited to the approved manual event types and must retain
+player-reported provenance. Unknown event type strings and optional payload
+keys should remain forward-compatible where the current serialization
+contracts support them.
+
+### MatchEventRevision
+
+Where event correction history is implemented, a revision stores immutable
+before/after snapshots, correction reason, event/match IDs, correction time,
+and schema version. Do not conflate event correction history with the separate
+session-metadata revision-history requirement.
 
 ## 4. Event rules
-Store match-relative and wall-clock timestamps. Order by gameTimeMs, then
-recordedAtEpochMs, then stable event ID. Preserve source/confidence. Corrections
-must be auditable. Reject negative timestamps and confidence outside [0,1].
-Unknown optional payload fields should be forward-compatible.
 
-## 5. Cooldown calculation
-readyAtGameTimeMs = trigger.gameTimeMs + definition.durationMs
+- Reject blank IDs/types and negative timestamps.
+- Confidence must be finite and within [0,1].
+- Order timeline events by `gameTimeMs ASC`, `recordedAtEpochMs ASC`, then
+  stable event ID.
+- Manual H1 entries use the manual source and are labeled player-reported.
+- Preserve unknown event type strings and optional payload keys where supported.
+- Corrections must preserve the original and corrected event snapshots where
+  revision history is supported.
+- Do not infer missing match times or objective/contest markers.
 
-Require a matching versioned definition. If missing, return UNAVAILABLE—never
-guess. Invalidate/recompute when a trigger is rejected, deleted, or corrected.
-UI wording must say “estimated ready”. Test boundaries, large durations,
-patch mismatch, and corrections.
+## 5. Local persistence
 
-## 6. Persistence and privacy
-Store MVP sessions locally; migrate every schema change. No telemetry by default.
-Export is user-initiated. Do not store screen recordings or game screenshots in MVP.
+Room is the Android local-persistence adapter. The current Room v1 schema
+contains `match_sessions`, `match_events`, and
+`match_event_revisions`. The generated schema is maintained under
+`data/local/schemas`.
 
-## 7. Initial Android screens
-Home/recent sessions; create session; manual session logger (no overlay);
-event timeline; cooldown estimates; session summary; settings/export/privacy.
-Support accessibility semantics, scalable text, adequate contrast, touch targets,
-and active-session restoration after process death.
+The adapter maps domain models to Room records at the persistence boundary.
+Session and event records are stored locally; match deletion cascades to its
+events and their correction revisions according to the configured foreign-key
+relationships.
+
+Every later schema change must increment the database version and include an
+explicit tested Room `Migration`. Destructive migration fallback is disabled;
+do not discard user data as a migration strategy. Review and commit generated
+schema changes with the corresponding migration.
+
+## 6. Export
+
+Export is explicitly user initiated through Android's document creation flow.
+The versioned JSON export contains the selected match and its supported event
+data, provenance, and correction history. It must not include unrelated device
+data or hidden game state.
+
+## 7. Android H1 screens
+
+The current H1 workflow is organized around:
+
+- Recent match list.
+- New/edit match metadata form.
+- Match detail.
+- Manual event entry for approved H1 event types.
+- Chronological event timeline with supported correction/deletion.
+- Factual display of recorded metadata and event counts.
+- Explicit JSON export.
+
+Do not add cooldown estimates, tactical verdicts, coaching, cross-match
+intelligence, live capture, OCR, overlays, or gameplay automation under H1.
 
 ## 8. Quality gates
-Run ./gradlew test, ./gradlew lint (when configured), and
-./gradlew assembleDebug. CI fails on compilation or unit-test failure. Pin
-Gradle, JDK, Kotlin, Android Gradle Plugin, and dependencies.
+
+Use the Gradle tasks configured by the repository and CI. The current shared
+and Android checks include:
+
+~~~sh
+./gradlew verifySharedCoreNoAndroidImports
+./gradlew :shared:domain:allTests :shared:contracts:allTests :shared:engine:allTests
+./gradlew :apps:android:testDebugUnitTest :apps:android:lintDebug assembleDebug
+./gradlew :data:local:connectedDebugAndroidTest
+~~~
+
+Room instrumentation tests must cover persistence round trips, deterministic
+ordering, correction transaction/history, deletion, and cascade behavior as
+applicable to the current implementation. Do not claim H1 is complete merely
+because a build or an individual CI job passes; use the root `PLAN.md` DoD and
+participant validation gate.
