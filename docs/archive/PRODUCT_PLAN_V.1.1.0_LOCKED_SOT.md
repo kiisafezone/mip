@@ -1,0 +1,1654 @@
+PRODUCT_PLAN_V.1.1.0_LOCKED_SOT
+
+Product: Mobile Legends Intelligence Platform (MIP)
+Reference: Mobile Legends Intelligence System: Technical Architecture & MVP Blueprint v1.0
+Version: 1.1.0
+Status: LOCKED
+Date: 2026-11-12
+Current Milestone: M0 status unverified; Sprint 0 complete; M1 not started.
+Governing source: PRODUCT_PLAN_V.1.1.0_LOCKED_SOT, incorporating the explicit product-owner decisions recorded in this version.
+
+---
+
+1. Mission
+
+Transform observable gameplay information into actionable tactical intelligence, both during a match and after a match.
+
+MIP is a cross-platform MOBA tactical intelligence companion.
+
+Its four product pillars are:
+
+- Awareness: Understand the battlefield.
+- Tracking: Monitor events and cooldowns.
+- Prediction: Estimate what happens next.
+- Analysis: Understand performance and mistakes.
+
+Target Users
+
+- Competitive and ranked players.
+- Players learning macro and micro mechanics.
+- Players who want to improve map awareness.
+- Players who review their matches to identify mistakes.
+- Coaches and team analysts.
+
+---
+
+2. Source Hierarchy
+
+The following hierarchy governs this document.
+
+1. PRODUCT_PLAN_V.1.1.0_LOCKED_SOT and its explicit product-owner decisions — the single source of truth for authorized product scope, architecture decisions, priorities, milestones, constraints, and acceptance requirements.
+2. Mobile Legends Intelligence System: Technical Architecture & MVP Blueprint v1.0 — the underlying technical and product reference. Its decisions remain authoritative except where an explicit product-owner decision recorded in this locked document overrides a specific item.
+3. MIP - FIXED & FINAL PRODUCT PLAN v1.0.0 — complementary reference only. It may identify gaps or conflicts. Only the constraints explicitly adopted in this locked document apply; it does not independently authorize additional product scope.
+4. Vision document — context only. It does not override this locked document or authorize additional scope.
+
+Conflict Resolution
+
+- This locked document and its explicit product-owner decisions govern.
+- The Blueprint remains the underlying reference except where an explicit decision in this document records a deviation.
+- The Room persistence selection is an explicit deviation from the Blueprint's SQLite + SQLDelight selection. No other Blueprint technology decision is changed.
+- v1.0.0 requirements apply only where explicitly adopted in this document as constraints.
+- Conflicts and unresolved matters must remain documented under Open Questions or Future / Requires Review.
+- No conflicting decision may be silently resolved by importing scope from another document.
+- Changes require explicit product-owner approval and a new document version.
+
+---
+
+3. Product Boundaries
+
+MIP is an information and coaching companion, not an automated gameplay bot.
+
+The system must not:
+
+- Control the player's character.
+- Automatically cast skills or execute attacks.
+- Modify game memory.
+- Inject code into the game.
+- Intercept or manipulate game packets.
+- Reveal hidden enemy information that cannot legitimately be observed.
+
+Predictions must be based on observed information and explicitly communicate uncertainty.
+
+The product prioritizes local processing. Gameplay screenshots are sensitive, real-time latency matters, and the app should remain useful without an internet connection.
+
+Adopted Privacy and Data-Control Constraints
+
+The following constraints are adopted from v1.0.0 without introducing additional product features:
+
+- Local-first operation is the initial product baseline.
+- Players control what information they enter, correct, retain, and export.
+- No undisclosed collection or transmission of match records.
+- Export and deletion must behave as documented.
+
+---
+
+4. Architecture
+
+4.1 Overall Architecture
+
+Use a modular monolith initially, with independently replaceable intelligence modules.
+
+Do not start with microservices. The project needs fast iteration, predictable deployment, and manageable complexity.
+
+The architecture consists of:
+
+User Interfaces
+
+- Android App — Live companion. Android is the only first-release platform.
+- Desktop App — Replay and analytics. Desktop development begins at M3.
+- Shared contracts and synchronization.
+
+Application Core
+
+- Match Manager.
+- Event Manager.
+- Game Database.
+- Session Manager.
+
+Intelligence Engine
+
+- Computer Vision.
+- OCR Engine.
+- Game Mechanics.
+- Cooldown Engine.
+- Wave Analysis.
+- Prediction Engine.
+- Threat Assessment.
+- Decision Support.
+
+Data & Infrastructure
+
+- Local Database.
+- Replay Storage.
+- Model Registry.
+- Patch Data.
+- Analytics.
+
+4.2 Architecture Layers
+
+Layer| Responsibility
+Presentation| Android and desktop interfaces
+Acquisition| Screen capture, replay import, manual events
+Perception| OCR, object detection, minimap interpretation
+Domain| Heroes, skills, items, events, game rules
+Intelligence| Tracking, inference and prediction
+Persistence| Match history and event storage
+Synchronization| Sharing data between devices
+Analytics| Post-match reports and statistics
+
+The intelligence engine must be platform-independent. Android and desktop must consume the same event contracts.
+
+4.3 Technology Stack
+
+Component| Technology| Responsibility
+Android application| Kotlin + Jetpack Compose| Native UI, permissions, lifecycle and floating companion interface
+Desktop application| Tauri + React + TypeScript| Desktop dashboard, replay viewer, visual analytics and configuration
+Shared intelligence| Kotlin Multiplatform| Shared domain models, event processing, game mechanics and tracking logic
+Computer vision| Python + PyTorch + ONNX Runtime| Model training in Python; optimized inference on Android and desktop
+Local persistence| SQLite + Room| Match sessions, event history, game data and offline storage
+
+Persistence decision: Room is the selected local persistence technology, using the repository's existing Room-based work as the baseline. This is an explicit product-owner decision overriding the Blueprint's SQLite + SQLDelight selection for this item only. No other Blueprint technology decision is changed.
+
+Additional technologies:
+
+Technology| Purpose
+OpenCV| Image preprocessing
+PaddleOCR| Text recognition
+YOLO| Hero, minion and object detection
+ONNX Runtime| Cross-platform model inference
+WebSocket| Optional live desktop synchronization; excluded from the first release
+FastAPI| Optional cloud services; excluded from the first release
+GitHub Actions| CI/CD and testing
+
+Desktop live screen capture, WebSocket synchronization, and FastAPI cloud services are excluded from the first release.
+
+Important implementation choice: Train and experiment with models in Python, but deploy optimized ONNX models to the applications. Avoid requiring Python to run on the Android device.
+
+4.4 Repository Structure
+
+```
+mlbb-intelligence/
+│
+├── apps/
+│   ├── android/
+│   │   ├── presentation/
+│   │   ├── capture/
+│   │   ├── overlay/
+│   │   └── permissions/
+│   │
+│   └── desktop/
+│       ├── src/
+│       ├── components/
+│       ├── replay/
+│       └── analytics/
+│
+├── shared/
+│   ├── domain/
+│   ├── contracts/
+│   ├── events/
+│   ├── game-mechanics/
+│   ├── cooldown/
+│   └── predictions/
+│
+├── intelligence/
+│   ├── perception/
+│   │   ├── minimap/
+│   │   ├── hero-detection/
+│   │   ├── minion-detection/
+│   │   └── ocr/
+│   │
+│   ├── tracking/
+│   │   ├── spell/
+│   │   ├── ultimate/
+│   │   ├── respawn/
+│   │   └── objective/
+│   │
+│   ├── analysis/
+│   │   ├── positioning/
+│   │   ├── wave-management/
+│   │   ├── zoning/
+│   │   └── power-spike/
+│   │
+│   └── decision-engine/
+│
+├── game-data/
+│   ├── heroes/
+│   ├── skills/
+│   ├── battle-spells/
+│   ├── items/
+│   ├── monsters/
+│   └── patches/
+│
+├── ml/
+│   ├── datasets/
+│   ├── training/
+│   ├── evaluation/
+│   └── exported-models/
+│
+├── services/
+│   ├── synchronization/
+│   ├── api/
+│   └── analytics/
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   ├── vision/
+│   └── replay-validation/
+│
+├── docs/
+│   ├── PRD.md
+│   ├── TRD.md
+│   ├── ARCHITECTURE.md
+│   ├── DATA_DICTIONARY.md
+│   └── TEST_STRATEGY.md
+│
+└── README.md
+```
+
+The "game-data/patches/" directory must be versioned. Hero cooldowns, item statistics, respawn rules and other mechanics must not be treated as permanent constants.
+
+---
+
+5. Event Log Specification
+
+5.1 Event-Driven Architecture
+
+Rather than having every module continuously calculate everything, create a common event system.
+
+Every event must carry:
+
+Field| Meaning
+Source| vision, OCR, manual, or imported replay
+Confidence score| Confidence associated with the event
+Match identifier| Identifies the associated match
+Game timestamp| Time associated with the event in the game
+Detection timestamp| Time when the event was detected
+Validation status| Indicates the event's validation status
+
+This allows the application to distinguish between something it actually observed and something it merely predicted.
+
+5.2 Event Types
+
+The Blueprint provides the following illustrative Kotlin event model:
+
+```kotlin
+sealed interface MatchEvent {
+    data class HeroSpotted(
+        val heroId: String,
+        val x: Float,
+        val y: Float,
+        val timestamp: Long
+    ) : MatchEvent
+
+    data class SpellUsed(
+        val heroId: String,
+        val spellId: String,
+        val timestamp: Long
+    ) : MatchEvent
+
+    data class HeroDied(
+        val heroId: String,
+        val timestamp: Long
+    ) : MatchEvent
+
+    data class MinionDetected(
+        val lane: String,
+        val timestamp: Long
+    ) : MatchEvent
+}
+```
+
+This is illustrative Kotlin, not a complete implementation.
+
+5.3 Event Processing
+
+The acquisition pipeline is:
+
+```
+Gameplay Screen / Replay Video
+            |
+            v
+      Frame Acquisition
+            |
+            v
+       Frame Sampling
+            |
+            v
+    Region of Interest (ROI)
+            |
+       +----+----+
+       |         |
+       v         v
+      OCR     Object Detection
+       |         |
+       +----+----+
+            |
+            v
+      Event Recognition
+            |
+            v
+       Event Validation
+            |
+            v
+      Match Event Stream
+            |
+            v
+      Intelligence Engine
+```
+
+5.4 Event Sources
+
+Three acquisition methods are defined.
+
+A. Android live capture
+
+Android MediaProjection captures the gameplay screen after explicit user consent.
+
+- Capture minimap.
+- Read hero status and cooldown indicators.
+- Detect visible deaths and kill notifications.
+- Recognize minion waves.
+- Process screenshots locally.
+
+For M2, updates are manual and event-driven only. Automatic recognition begins in M4, not M2. M2 and M4 are subject to the authorization and data-rights release gates in this document.
+
+B. Desktop replay ingestion
+
+Import recorded gameplay videos.
+
+- Frame extraction.
+- Timeline reconstruction.
+- Event detection.
+- Match statistics.
+- Tactical heatmaps.
+- Mistake identification.
+
+Desktop replay analysis begins at M3. Desktop live screen capture is excluded from the first release.
+
+C. Manual event input
+
+A fallback for events computer vision cannot reliably detect.
+
+- Register enemy hero selection.
+- Select enemy Battle Spells.
+- Record an observed spell usage.
+- Confirm enemy death.
+- Correct inaccurate detections.
+
+5.5 Data Integrity Rules
+
+- Preserve the distinction between observed information and predictions.
+- Every event must retain its source and confidence information.
+- Match events must retain their match identifier and timestamps.
+- Events must pass through event validation before entering the match event stream.
+- Predictions must communicate uncertainty.
+- Previously observed enemy positions must not be treated as current positions.
+
+---
+
+6. P0 / P1 / P2 Priorities
+
+The first release is Android only. Desktop development begins at M3. Desktop entries in the priority table remain planned capabilities for the applicable later desktop milestone and are not first-release scope.
+
+P0 — Required for MVP
+
+Feature| Android| Desktop
+Match session management| Yes| Yes
+Hero selection and setup| Yes| Yes
+Manual spell tracking| Yes| Yes
+Automatic spell recognition| Experimental| Yes
+Enemy death tracking| Yes| Yes
+Respawn countdown| Yes| Yes
+Objective countdowns| Yes| Yes
+Match event timeline| Yes| Yes
+Replay import and analysis| —| Yes
+
+Automatic spell recognition and other automatic recognition are not part of M2. Automatic recognition begins in M4.
+
+P1 — First Major Upgrade
+
+- Automatic minimap interpretation.
+- Enemy last-known position.
+- Missing enemy warnings.
+- Minion detection.
+- Freeze/slow push/fast push classification.
+- Lane pressure analysis.
+- Item and level power spike tracking.
+
+P2 — Advanced Intelligence
+
+- Rotation prediction.
+- Zoning analysis.
+- Positioning evaluation.
+- Skillshot prediction.
+- Engagement probability.
+- Team-fight analysis.
+- Personalized tactical recommendations.
+
+---
+
+7. Development Milestones M0–M5
+
+M0–M5 remain the governing development roadmap. Release groupings 1–4 are future grouping only and do not replace or modify this roadmap.
+
+M0 — Foundation
+
+Scope
+
+- Repository setup.
+- Architecture and shared contracts.
+- Game database schema.
+- Match session lifecycle.
+- Event processing engine.
+
+Deliverable: A functioning shared application core.
+
+Done when test:
+
+- Repository setup is present.
+- Architecture and shared contracts are established.
+- The game database schema exists.
+- Match sessions can complete their lifecycle.
+- The event processing engine functions.
+
+Current status: M0 status unverified; Sprint 0 complete; M1 not started. M0 must not be marked complete until all M0 acceptance criteria are verified with evidence.
+
+M1 — Tracking Engine
+
+Scope
+
+- Battle Spell tracking.
+- Ultimate tracking.
+- Enemy death events.
+- Respawn calculations.
+- Objective timers.
+
+Deliverable: Reliable manual and event-driven tracking.
+
+Done when test:
+
+- Battle Spell and ultimate tracking operate.
+- Enemy death events can be recorded.
+- Respawn calculations operate from death events.
+- Objective timers operate.
+- Manual and event-driven tracking can be demonstrated.
+
+M2 — Android Companion
+
+Scope
+
+- Screen capture.
+- Permissions.
+- Floating interface.
+- Live event updates.
+- Local persistence.
+
+Deliverable: First usable in-match companion.
+
+M2 operating boundary:
+
+- M2 supports manual and event-driven updates only.
+- Automatic recognition does not begin in M2; it begins in M4.
+- The floating interface is information-only. It must not control gameplay or execute gameplay actions.
+- M2 is blocked from release until the written-authorization and data-rights review gates have passed.
+
+Done when test:
+
+- Screen capture operates after the required permissions are granted.
+- The floating interface operates.
+- Live event updates are visible.
+- Match information is persisted locally.
+
+M3 — Desktop Analysis
+
+Scope
+
+- Replay ingestion.
+- Frame extraction.
+- Event reconstruction.
+- Timeline viewer.
+- Match reports.
+
+Deliverable: Desktop analysis application.
+
+Desktop development begins at M3. Desktop live screen capture, WebSocket synchronization, and FastAPI cloud services are excluded from the first release.
+
+Done when test:
+
+- A recorded gameplay video can be imported.
+- Frames can be extracted.
+- Events can be reconstructed.
+- A timeline can be viewed.
+- Match reports can be produced.
+
+M4 — Computer Vision
+
+Scope
+
+- OCR.
+- Minimap detection.
+- Hero detection.
+- Minion detection.
+- Automatic event recognition.
+
+Deliverable: Reduced dependence on manual inputs.
+
+M4 is blocked from release until the written-authorization and data-rights review gates have passed.
+
+Done when test:
+
+- OCR operates on supported samples.
+- Minimap detection operates.
+- Hero detection operates.
+- Minion detection operates.
+- Automatic event recognition is demonstrated.
+
+M5 — Tactical Intelligence
+
+Scope
+
+- Map awareness.
+- Wave management.
+- Threat assessment.
+- Power spike detection.
+- Positioning and zoning.
+- Skillshot prediction.
+
+Deliverable: Full tactical intelligence companion.
+
+M5 is blocked until M4 meets its applicable acceptance targets.
+
+Done when test:
+
+- Map-awareness analysis operates.
+- Wave-management analysis operates.
+- Threat assessment operates.
+- Power-spike detection operates.
+- Positioning and zoning analysis operate.
+- Skillshot prediction operates.
+
+---
+
+8. Acceptance Criteria
+
+The following are proposed engineering targets, not measured performance claims.
+
+Component| Initial acceptance target
+Manual event tracking| No lost confirmed events
+Cooldown calculation| Correct against configured game data
+Respawn timer| Correct when death event is correctly detected
+Replay timeline| Events synchronized to video within 1 second
+OCR| At least 95% accuracy on supported UI samples
+Hero detection| At least 90% precision on supported test samples
+Android responsiveness| No material gameplay interruption
+Offline operation| Core tracking works without network
+
+For automatic recognition, measure precision and recall separately.
+
+A false enemy death notification can be worse than no notification.
+
+Intelligence Quality Metrics
+
+Metric| What it tells us
+Detection precision| How often alerts are correct
+Detection recall| How many observable events are found
+Event latency| How quickly an event is recognized
+Cooldown error| Difference from actual availability
+Position error| Difference between predicted and observed location
+Prediction calibration| Whether confidence scores are trustworthy
+Battery usage| Cost of live analysis
+FPS impact| Whether gameplay is affected
+
+A prediction engine that says it is 90% confident should actually be correct approximately 90% of the time across appropriately evaluated predictions.
+
+8.1 Adopted Definition of Done Constraints
+
+The following v1.0.0 Definition of Done requirements are adopted as constraints. They do not authorize additional product features or change the M0–M5 roadmap.
+
+Product-level completion constraints
+
+- Complete end-to-end workflows.
+- Local data survives application restart.
+- Correct interrupted-session recovery.
+- Tested database migrations.
+- Documented export and deletion.
+- Invalid input must not silently corrupt records.
+- Unit, integration, and UI tests.
+- Successful Android build and CI.
+- No unresolved critical or high-severity release-blocking defects.
+- Verified accessibility.
+- Accurate user and developer documentation.
+- Reproducible release builds.
+
+Issue-level completion constraints
+
+Every feature or issue must have:
+
+- Acceptance criteria.
+- Relevant tests.
+- Required documentation.
+- Code review.
+- CI results.
+- Verifiable evidence.
+
+A merged PR or passing CI alone does not prove product completion.
+
+The milestone-specific "Done when" tests and engineering acceptance targets in the Blueprint remain applicable alongside these adopted completion constraints.
+
+8.2 Cooldown Data Integrity Constraint
+
+Unknown or unverified cooldown mechanics must be reported as unavailable rather than guessed. A cooldown result must not present an unsupported value as confirmed. This constraint does not expand the cooldown feature scope or change the applicable milestone.
+
+---
+
+9. Risks
+
+Risk| Severity| Mitigation
+Game UI changes| High| Versioned UI profiles
+OCR mistakes| High| Confidence thresholds and manual correction
+Minimap ambiguity| High| Temporal tracking and uncertainty
+Android performance| High| Frame sampling and optimized inference
+Battery consumption| Medium| Adaptive processing frequency
+Game compatibility| High| Policy review and supported-device testing
+Patch changes| High| Versioned game mechanics
+False predictions| High| Separate observations from predictions
+
+Additional Engineering Considerations
+
+- Android overlay compatibility must be tested.
+- Test MediaProjection, foreground-service requirements, orientation changes, capture interruptions and overlay behavior on the actual device.
+- Review Mobile Legends' current terms and anti-cheat rules before distributing an overlay or automated screen-analysis companion.
+- Technical permission from Android does not automatically mean a feature is permitted by the game publisher.
+
+9.1 M2 and M4 Authorization and Data-Rights Release Gates
+
+Written authorization and data-rights review are mandatory release gates for M2 and M4.
+
+- The applicable written authorization must be obtained before the corresponding M2 or M4 functionality is released.
+- Data-rights review must be completed for the applicable acquisition methods and data used.
+- Authorization for one acquisition method does not automatically authorize another.
+- Applicable policy review must be completed.
+- Nothing in M2 or M4 ships until both the written-authorization and data-rights review gates have passed.
+
+These gates apply in addition to the Blueprint's stated requirement to review Mobile Legends' current terms and anti-cheat rules before distributing an overlay or automated screen-analysis companion.
+
+---
+
+10. Scope Guard
+
+This document is governed by PRODUCT_PLAN_V.1.1.0_LOCKED_SOT and its explicit product-owner decisions. The Blueprint remains the underlying reference except where this locked document records an explicit decision.
+
+A proposed feature or change may enter the plan only when:
+
+1. It reads or writes an event in the match event log.
+2. It belongs to the currently authorized milestone.
+3. It does not violate the product boundaries.
+4. It does not introduce scope from the complementary v1.0.0 plan or the vision document.
+
+A feature that does not satisfy these conditions is outside the authorized scope of this plan.
+
+Priority and Milestone Separation
+
+P0, P1 and P2 define feature priorities.
+
+M0–M5 define the development roadmap.
+
+A priority designation does not independently authorize implementation ahead of its applicable milestone.
+
+No milestone may be skipped or silently treated as completed.
+
+Change Control
+
+- New scope requires explicit review.
+- Conflicts must be recorded under Open Questions.
+- This locked document governs. The Blueprint remains authoritative for underlying decisions unless this document records an explicit product-owner deviation.
+- No unapproved feature may be introduced through implementation details, architecture changes, or documentation updates.
+- Product-plan, release-scope, requirements, and Definition of Done changes require approval before implementation resumes.
+- Issues must derive from approved product requirements.
+- PRs must reference their issues, describe changes, provide test evidence, and identify limitations.
+- No PR may be merged without explicit maintainer approval.
+- Releases must pass their applicable Definition of Done and release gates.
+- Material changes require documented review and approval.
+- Changes to this document require a new version number and explicit product-owner approval.
+
+---
+
+11. Open Questions and Recorded Decisions
+
+The following records preserve the original conflicts, gaps, and ambiguities together with their product-owner decisions. A recorded decision applies only to the extent stated; it does not silently resolve unrelated technical details.
+
+11.1 Android Live Capture in M2 vs. Manual-First Tracking
+
+Blueprint statements:
+
+- M1 establishes reliable manual and event-driven tracking.
+- M2 introduces Android screen capture, permissions, floating interface, live event updates, and local persistence.
+- Android live capture is an acquisition method.
+- P0 includes experimental automatic spell recognition.
+
+Ambiguity:
+
+The Blueprint does not explicitly establish whether M2 live capture is initially limited to acquiring screenshots and updating manually supported events, or whether automatic recognition is expected to become operational during M2.
+
+Decision required:
+
+Clarify the boundary between manual-first M1 tracking and automatic recognition introduced by live capture.
+
+Recorded decision: M2 supports manual and event-driven updates only. Automatic recognition starts in M4, not M2. M2 remains subject to its written-authorization and data-rights release gates.
+
+Status: Resolved.
+
+11.2 Skillshot, Zoning and Positioning in M5
+
+Blueprint statements:
+
+- Skillshot prediction is P2.
+- Zoning analysis is P2.
+- Positioning evaluation is P2.
+- M5 includes positioning and zoning and skillshot prediction.
+
+Ambiguity:
+
+The Blueprint places these capabilities in the advanced-priority category and M5 but does not define their individual technical acceptance thresholds, required input quality, or validation datasets.
+
+Decision required:
+
+Define what constitutes successful M5 implementation for each capability without expanding beyond the stated feature scope.
+
+Recorded decision: M5 is blocked until M4 meets its applicable acceptance targets. This decision establishes the M4 dependency and does not independently define individual technical acceptance thresholds for each M5 capability.
+
+Status: M4 dependency recorded; capability-specific acceptance thresholds remain to be defined within the applicable M5 specification.
+
+11.3 Desktop and Kotlin Multiplatform Scope for the First Release
+
+Blueprint statements:
+
+- The product is cross-platform.
+- Android and desktop share one intelligence engine and event contracts.
+- Desktop uses Tauri + React + TypeScript.
+- Shared intelligence uses Kotlin Multiplatform.
+- M3 introduces desktop replay analysis.
+- The final technical recommendation includes Android + Windows/Desktop.
+
+Ambiguity:
+
+The Blueprint does not clearly define whether both complete applications and Kotlin Multiplatform integration are mandatory for the first release, or whether the desktop application is introduced incrementally at M3.
+
+Decision required:
+
+Confirm the first-release platform boundary and the required extent of shared Kotlin Multiplatform functionality.
+
+Recorded decision: The first release is Android only. Desktop development begins at M3. The Blueprint's shared intelligence and event-contract direction remains unchanged.
+
+Status: Resolved.
+
+11.4 Blueprint's Current-Milestone Start Point
+
+Blueprint statements:
+
+- M0 is the foundation milestone.
+- The recommendation explicitly says: start with M0, not computer vision.
+- The roadmap proceeds from M0 through M5.
+
+Ambiguity:
+
+The Blueprint establishes M0 as the recommended starting point but does not identify the current implementation state of the existing MIP repository or establish whether M0 has already been completed.
+
+Decision required:
+
+Determine the repository's verified milestone status before selecting the next implementation milestone. Do not assume M0 is incomplete or complete without evidence.
+
+Recorded decision: Current repository status is: "M0 status unverified; Sprint 0 complete; M1 not started." Do not mark M0 complete until all M0 acceptance criteria are verified with evidence.
+
+Status: Recorded. M0 completion remains unverified.
+
+11.5 Desktop Live Screen Capture
+
+Blueprint statements:
+
+- The Android live-capture method specifies Android MediaProjection.
+- The Android and desktop responsibility table marks live screen capture as Yes on both platforms.
+- Desktop replay ingestion is specified separately.
+
+Ambiguity:
+
+The desktop live-capture mechanism and its relationship to replay ingestion are not specified.
+
+Decision required:
+
+Clarify what desktop live screen capture means and whether it is part of the first desktop release.
+
+Recorded decision: Desktop live screen capture is excluded from the first release. Desktop development at M3 is for the specified replay-analysis scope.
+
+Status: First-release boundary resolved. No desktop live-capture mechanism is authorized for the first release.
+
+11.6 Event Confidence Representation
+
+Blueprint statement:
+
+Every event carries a confidence score.
+
+Ambiguity:
+
+The confidence score's range, interpretation, calibration method, and acceptance thresholds are not defined.
+
+Decision required:
+
+Specify the representation and validation method for confidence scores.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.7 Event Timestamp Semantics
+
+Blueprint statement:
+
+Every event carries a game timestamp and a detection timestamp.
+
+Ambiguity:
+
+The timestamp units, clock origin, replay-time mapping, and handling of interrupted capture are not specified.
+
+Decision required:
+
+Define timestamp semantics and consistency rules for live capture and replay ingestion.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.8 Event Validation Status
+
+Blueprint statement:
+
+Every event carries a validation status.
+
+Ambiguity:
+
+The possible validation states and transitions are not defined.
+
+Decision required:
+
+Define the validation-status lifecycle without adding event capabilities beyond the Blueprint.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.9 Event Schema Completeness
+
+Blueprint statement:
+
+The Blueprint provides illustrative event types for HeroSpotted, SpellUsed, HeroDied, and MinionDetected.
+
+Ambiguity:
+
+The example does not specify complete event contracts for all P0 tracking requirements, including ultimate tracking and objective countdowns.
+
+Decision required:
+
+Define the required event contracts for the current milestone while preserving the Blueprint's event fields and source distinctions.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.10 Game Data and Patch Versioning
+
+Blueprint statements:
+
+- The game database contains heroes, skills, items, and game rules.
+- Patch data must be versioned.
+- Cooldown calculations should account for patches, equipment, talents and cooldown reductions where applicable.
+
+Ambiguity:
+
+The Blueprint does not define the source, update process, or validation procedure for patch-specific game data.
+
+Decision required:
+
+Establish how configured game data is maintained and verified.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.11 Optional Synchronization and Cloud Services
+
+Blueprint statements:
+
+- WebSocket is optional for live desktop synchronization.
+- FastAPI is optional for cloud services.
+- The product prioritizes local processing and offline usefulness.
+
+Ambiguity:
+
+The conditions under which synchronization or cloud services are enabled are not specified.
+
+Decision required:
+
+Clarify whether these are excluded from the first release or remain optional implementation choices.
+
+Recorded decision: WebSocket synchronization and FastAPI cloud services are excluded from the first release.
+
+Status: First-release boundary resolved.
+
+11.12 Computer Vision Acceptance Coverage
+
+Blueprint statements:
+
+- OCR has a proposed target of at least 95% accuracy on supported UI samples.
+- Hero detection has a proposed target of at least 90% precision on supported test samples.
+- Automatic recognition requires separate precision and recall measurements.
+
+Ambiguity:
+
+The supported UI samples, test dataset composition, and evaluation conditions are not defined.
+
+Decision required:
+
+Define the test samples and evaluation conditions used to verify these targets.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.13 v1.0.0 Complementary Reference — Closed
+
+v1.0.0 statement:
+
+The complete verbatim v1.0.0 document is supplied for comparison.
+
+Blueprint statement:
+
+The Blueprint remains the single source of truth for product scope, architecture, priorities, milestones, technical decisions, and acceptance criteria.
+
+Decision required:
+
+None. The source-availability limitation is closed. The v1.0.0 text is used only to identify conflicts and gaps below; it does not authorize additional scope.
+
+Status: Closed. The source hierarchy is superseded by the explicit hierarchy in Section 2 of this locked document.
+
+11.14 Live Capture, OCR, Overlay and Authorization
+
+v1.0.0 statements:
+
+- “The initial release must work without automated interaction with the running game.”
+- “Automated live-game capture,” “OCR against the running game,” and “Live overlays” remain blocked without specific written authorization and applicable policy review.
+- Authorization for one acquisition method does not authorize another.
+- The initial approved approach includes manual match information, player-entered event records, player-authored observations, synthetic data for testing, reviewed mechanics data, and explicitly authorized imports.
+
+Blueprint statements:
+
+- Android MediaProjection captures the gameplay screen after explicit user consent.
+- M2 includes screen capture, permissions, a floating interface, live event updates, and local persistence.
+- The acquisition architecture includes OCR and object detection.
+- M4 includes OCR and automatic event recognition.
+- The Blueprint says to review Mobile Legends' current terms and anti-cheat rules before distributing an overlay or automated screen-analysis companion.
+
+Conflict / gap:
+
+The v1.0.0 written-authorization restriction is stricter than the Blueprint's stated Android user-consent requirement and its M2/M4 acquisition roadmap. The Blueprint does not explicitly state that the separate written authorization required by v1.0.0 is a prerequisite for each of these methods.
+
+Decision required:
+
+Decide whether the v1.0.0 written-authorization restriction is to be adopted as an additional constraint. Until that decision, the Blueprint governs; no v1.0.0 authorization requirement is imported into the plan.
+
+Recorded decision: Adopt the written-authorization requirement as a release gate for M2 and M4. Written authorization and data-rights review must both pass before anything in M2 or M4 ships. Authorization for one acquisition method does not automatically authorize another. Applicable policy review remains required.
+
+Status: Resolved. M2 and M4 release gates recorded in Section 9.1.
+
+11.15 Android-First vs. Android and Desktop
+
+v1.0.0 statements:
+
+- Platform: Android-first.
+- Technical direction specifies an Android-first application and Kotlin Multiplatform shared core.
+- Desktop is not established as a required first-release application in the v1.0.0 technical direction.
+
+Blueprint statements:
+- MIP is a cross-platform product with Android and desktop user experiences.
+- Desktop uses Tauri + React + TypeScript.
+- Android and desktop share event contracts and intelligence logic.
+- M3 introduces the desktop analysis application.
+- The final technical recommendation lists Android + Windows/Desktop.
+
+Conflict / gap:
+
+The v1.0.0 Android-first platform framing does not establish the same cross-platform commitment and desktop roadmap as the Blueprint. It does not explicitly prohibit desktop, but its platform commitment is narrower.
+
+Decision required:
+
+No change to the Blueprint's cross-platform direction unless explicitly decided. Clarify whether Android-first sequencing from v1.0.0 has any intended meaning beyond the Blueprint's milestone order.
+
+Recorded decision: The first release is Android only. Desktop development begins at M3. The cross-platform direction and shared intelligence/event-contract architecture remain unchanged.
+
+Status: Resolved.
+
+11.16 Room vs. SQLDelight
+
+v1.0.0 statement:
+
+- “Local persistence through Room.”
+
+Blueprint statement:
+
+- “SQLite + SQLDelight” is the local persistence technology.
+- SQLDelight is specified for match sessions, event history, game data and offline storage.
+
+Conflict:
+
+The local persistence technologies differ. Room is specified by v1.0.0; SQLDelight is specified by the Blueprint.
+
+Decision required:
+
+The Blueprint's SQLDelight decision remains authoritative. Decide explicitly if Room should replace it; until then, do not introduce Room.
+
+Recorded decision: Room is selected as the local persistence technology, using the repository's existing Room-based work as the baseline. This is an explicit product-owner override of the Blueprint's SQLite + SQLDelight selection for this one item only. No other Blueprint technology decision is changed.
+
+Status: Resolved. Blueprint deviation recorded in the change log.
+
+11.17 Releases 1–4 vs. Milestones M0–M5
+
+v1.0.0 statements:
+
+- Release 1 — Functional Match Review Foundation.
+- Release 2 — Tactical Intelligence.
+- Release 3 — Cross-Match Intelligence.
+- Release 4 — Personal Improvement System.
+- Each release has its own scope and exit outcome.
+
+Blueprint statements:
+
+- The development roadmap consists of M0 Foundation, M1 Tracking Engine, M2 Android Companion, M3 Desktop Analysis, M4 Computer Vision, and M5 Tactical Intelligence.
+- Each milestone has its own scope, deliverable, and “Done when” test.
+
+Conflict / gap:
+
+The two documents use different roadmap structures and group capabilities differently. The v1.0.0 release sequence is not a one-to-one replacement for the Blueprint's M0–M5 milestones. Cross-match intelligence and a personal improvement system are specified as releases in v1.0.0 but are not separate Blueprint milestones.
+
+Decision required:
+
+Retain M0–M5 as the governing roadmap. Decide separately whether any release-level grouping is needed; do not substitute Releases 1–4 or import their deliverables into the Blueprint milestones.
+
+Recorded decision: M0–M5 remain the governing roadmap. Releases 1–4 are future grouping only and do not replace the milestones, authorize implementation, or import their deliverables into the roadmap.
+
+Status: Resolved.
+
+11.18 Skillshot, Zoning and Rotation Prediction vs. v1.0.0 Boundaries
+
+v1.0.0 statements:
+
+- P2 includes rotation prediction, zoning analysis, positioning evaluation, and skillshot prediction.
+- Explicit non-goals include an unofficial live-game advantage overlay, a hidden enemy tracker, and a platform that fabricates tactical certainty.
+- The product must not reveal hidden enemy information.
+
+Blueprint statements:
+
+- P2 includes rotation prediction, zoning analysis, positioning evaluation, and skillshot prediction.
+- M5 includes positioning and zoning and skillshot prediction.
+- Predictions must be based on observed information and explicitly communicate uncertainty.
+- The product boundaries prohibit revealing hidden enemy information that cannot legitimately be observed.
+- Previously observed enemy positions must not be treated as current positions.
+
+Conflict / gap:
+
+There is no direct conflict between the listed P2 capabilities and the v1.0.0 non-goals when those capabilities use legitimate observable information and communicate uncertainty. The v1.0.0 restriction on an unofficial live-game advantage overlay may, however, conflict with the Blueprint's floating in-match interface depending on its functionality and publisher-policy status. The Blueprint does not define detailed acceptance or validation thresholds for these advanced predictions.
+
+Decision required:
+
+Keep the Blueprint's P2 and M5 scope and its observable-information boundaries. Clarify the permitted functionality of the floating interface and the validation requirements for advanced predictions. Do not treat the v1.0.0 non-goals as authorization to remove Blueprint features or as authorization to expand them.
+
+Recorded decision: Keep the Blueprint's P2 and M5 scope and observable-information boundaries. The floating interface is information-only. M5 is blocked until M4 meets its applicable acceptance targets.
+
+Status: Scope and interface boundary resolved. M5 dependency recorded in Section 7.
+
+11.19 Evidence Classes vs. Event Source Field
+
+v1.0.0 statements:
+
+The evidence model classifies information as:
+
+- Observed.
+- Player-reported.
+- Imported.
+- Synthetic.
+- Calculated.
+- Inferred.
+- Recommended.
+
+It also requires supporting information to be identified and uncertainty to be shown.
+
+Blueprint statements:
+
+Every event carries a source field with the values vision, OCR, manual, or imported replay, along with confidence score, match identifier, game timestamp, detection timestamp, and validation status.
+
+Conflict / gap:
+
+The v1.0.0 evidence classes describe the epistemic or analytical status of information, while the Blueprint's source field identifies the acquisition source of an event. They are not equivalent taxonomies. The Blueprint does not specify the additional v1.0.0 evidence-classification field or its seven categories.
+
+Decision required:
+
+Keep the Blueprint's event source field and its defined source distinctions. Decide explicitly whether an additional evidence-classification model is needed; do not add the v1.0.0 classifications to the event schema without approval.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.20 Definition of Done
+
+v1.0.0 statements:
+
+- Defines a product-level Definition of Done across product functionality, data and intelligence, reliability, quality, security and compliance, and documentation and delivery.
+- Defines a separate Definition of Done for every feature and issue.
+- Requires acceptance criteria, tests, documentation, code review, CI, and verifiable evidence before an issue is Done.
+- States that a merged PR or passing CI alone does not prove product completion.
+
+Blueprint statements:
+
+- Each milestone has a deliverable and a milestone-specific “Done when” test.
+- The Blueprint provides proposed engineering acceptance targets and intelligence quality metrics.
+- The Blueprint does not define the same comprehensive product-level and issue-level Definition of Done.
+
+Gap:
+
+The Blueprint's milestone tests and acceptance criteria do not specify all of the additional product-level and issue-level completion gates described in v1.0.0.
+
+Decision required:
+
+Keep the Blueprint's milestone “Done when” tests and acceptance criteria authoritative. Decide whether to adopt any additional Definition of Done requirements; none are imported automatically from v1.0.0.
+
+Recorded decision: Adopt the v1.0.0 product-level and issue-level Definition of Done requirements as constraints only. They supplement, and do not replace, the Blueprint's milestone tests and acceptance criteria. See Section 8.1.
+
+Status: Resolved.
+
+11.21 Match Management and Match Metadata
+
+v1.0.0 statements:
+
+- Create, edit, review, and delete match records.
+- Record match date and duration, game mode and patch when known, selected role and hero, and relevant match context.
+- Maintain match history and preserve records when some information is unavailable.
+
+Blueprint statements:
+
+- M0 includes match session lifecycle and a game database schema.
+- P0 includes match session management and hero selection and setup.
+- The event model includes a match identifier.
+- The Blueprint does not enumerate the full v1.0.0 match metadata fields or the complete record-management workflow.
+
+Gap:
+
+The Blueprint does not specify all of the match metadata fields and match-record management operations listed in v1.0.0.
+
+Decision required:
+
+Use the Blueprint's M0 and P0 scope as written. Decide explicitly whether any additional metadata fields or record-management operations are required; do not import the v1.0.0 list by default.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.22 Event Recording Fields and Correction
+
+v1.0.0 statements:
+
+Every event must retain:
+
+- Match-relative timestamp.
+- Recording timestamp.
+- Source.
+- Confidence or validation state where applicable.
+- Relevant actor or participant, if known.
+- Structured event details.
+
+The player must be able to correct or remove inaccurate records.
+
+Blueprint statements:
+
+Every event carries source, confidence score, match identifier, game timestamp, detection timestamp, and validation status. The Blueprint also requires event validation before an event enters the match event stream.
+
+Conflict / gap:
+
+The Blueprint specifies game timestamp and detection timestamp, but does not separately define a recording timestamp, actor or participant field, or the complete structured event-details contract. The Blueprint mentions event validation but does not explicitly define the player correction and removal workflow for all recorded events.
+
+Decision required:
+
+Retain the Blueprint's defined event fields and validation pipeline. Decide whether additional event fields and correction/removal operations are needed without adding them automatically from v1.0.0.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.24 Cooldown Intelligence Detail
+
+v1.0.0 statements:
+
+- Versioned cooldown definitions.
+- Ability and spell identification.
+- Cooldown-ready-time estimates.
+- Source and version provenance.
+- Missing-data handling.
+- Clear distinction between estimated and confirmed availability.
+- Recalculation when relevant events are corrected.
+- Unknown or unverified mechanics must return unavailable rather than guessed values.
+
+Blueprint statements:
+
+- The Cooldown Engine is an intelligence module.
+- M1 includes Battle Spell and ultimate tracking.
+- Cooldown calculations should account for patches, equipment, talents and cooldown reductions where applicable.
+- Unknown modifiers should cause the result to be marked approximate.
+
+Gap:
+
+The Blueprint does not explicitly define all the v1.0.0 cooldown data provenance, unavailable-state, confirmed-versus-estimated, and recalculation requirements. Its instruction to mark results approximate when modifiers are unknown is not identical to the v1.0.0 instruction to return unavailable for unknown or unverified mechanics.
+
+Decision required:
+
+Follow the Blueprint's cooldown scope and stated approximation behavior. Decide explicitly whether additional cooldown provenance, unavailable-state, or recalculation rules are required.
+
+Recorded decision: Adopt the v1.0.0 "unavailable, not guessed" rule as a constraint. Unknown or unverified cooldown mechanics must be unavailable rather than guessed. This does not expand cooldown feature scope.
+
+Status: Resolved as a data-integrity constraint. See Section 8.2.
+
+11.28 Privacy, Local-First Operation and Data Control
+
+v1.0.0 statements:
+
+- Local-first operation is the initial product baseline.
+- Players control what information they enter, correct, retain, and export.
+- No undisclosed collection or transmission of match records.
+- Export and deletion must behave as documented.
+
+Blueprint statements:
+
+- The product prioritizes local processing and offline usefulness.
+- Screenshots are sensitive and should be processed locally.
+- WebSocket synchronization and FastAPI cloud services are optional.
+- Local persistence and offline operation are part of the architecture.
+
+Gap:
+
+The Blueprint establishes local processing and offline usefulness but does not specify all the v1.0.0 user-control, retention, export, deletion, and undisclosed-transmission requirements.
+
+Decision required:
+
+Retain the Blueprint's local-processing and offline direction. Decide explicitly whether additional data-control and privacy requirements are needed; do not import them automatically from v1.0.0.
+
+Recorded decision: Adopt the v1.0.0 privacy and data-control rules as constraints only. See Section 3. They do not authorize additional product features.
+
+Status: Resolved.
+
+11.29 Product Principles and Explicit Non-Goals
+
+v1.0.0 statements:
+
+The product principles include decision-focused analysis, evidence-based conclusions, transparency, actionable feedback, progress orientation, uncertainty handling, player control, privacy, compliance, and maintainability.
+
+The explicit non-goals also include a matchmaking service, social network, replacement for the MLBB client, and generic statistics dashboard without decision analysis.
+
+Blueprint statements:
+
+- The product pillars are Awareness, Tracking, Prediction, and Analysis.
+- The product boundaries prohibit gameplay control, skill automation, memory modification, code injection, packet interception or manipulation, and illegitimate hidden enemy information.
+- Predictions must communicate uncertainty.
+- The Blueprint does not enumerate all the v1.0.0 principles or non-goals.
+
+Gap:
+
+The Blueprint does not explicitly state the full v1.0.0 principles list or every additional non-goal listed above.
+
+Decision required:
+
+The Blueprint's product pillars and boundaries remain authoritative. Decide explicitly whether additional principles or non-goals are needed; do not add them as requirements from v1.0.0.
+
+Status: Deferred to M0 spec work. Original question text retained.
+
+11.30 Technical Architecture Baseline and Change Authority
+
+v1.0.0 statements:
+
+- The existing technical foundation remains the baseline unless a demonstrated product requirement justifies changing it.
+- Product requirements take priority over preserving an existing architecture decision.
+- Technical design must support the agreed product.
+
+Blueprint statements:
+
+- The Blueprint recommends a modular monolith.
+- It specifies Tauri + React + TypeScript, Kotlin Multiplatform, Python + PyTorch + ONNX Runtime, and SQLite + SQLDelight.
+- It recommends starting with M0 and establishing the domain model, event contracts, game database, and tracking engine.
+
+Conflict / gap:
+
+The v1.0.0 technical-direction language establishes a conditional baseline and change principle that is not stated in the same way in the Blueprint. The Blueprint itself specifies its technical stack and starting recommendation.
+
+Decision required:
+
+Keep the Blueprint's technical decisions authoritative. Decide explicitly whether any additional architecture-change governance is required; do not use v1.0.0 to replace or qualify the Blueprint's stack.
+
+Recorded decision: Adopt explicit review and approval for material architecture changes as a governance constraint. The Blueprint's technology decisions remain unchanged except for the explicitly approved Room persistence deviation recorded in Section 4.3.
+
+Status: Resolved.
+
+11.31 Governance and Approval Gates
+
+v1.0.0 statements:
+
+- Product plan, release scope, requirements, and Definition of Done must be approved before implementation resumes.
+- Issues must derive from approved product requirements.
+- PRs must reference issues, describe changes, provide test evidence, and identify limitations.
+- No PR may be merged without explicit maintainer approval.
+- Releases must pass their applicable Definition of Done and release gates.
+- Material changes require documented review and approval.
+
+Blueprint statements:
+
+The Blueprint provides a recommended technical baseline and milestone roadmap, but does not specify the same issue, PR, merge-approval, and release-governance procedure.
+
+Gap:
+
+The Blueprint does not define the v1.0.0 project execution and governance gates.
+
+Decision required:
+
+Do not import these governance requirements automatically into the Blueprint-based product scope. Decide separately whether project governance rules are required and where they should be documented.
+
+Recorded decision: Adopt the v1.0.0 governance and approval gates as project constraints. They do not add product features or alter the M0–M5 roadmap.
+
+Status: Resolved. Governance constraints recorded in Section 10.
+
+11.33 Data Acquisition, Rights and Compliance Review
+
+v1.0.0 statements:
+
+- Mechanics data may be used only when its source and usage rights have been reviewed.
+- Explicitly authorized imports require all required reviews.
+- The compliance document remains a mandatory engineering and release constraint.
+- Required third-party rights and permissions must be verified before release.
+
+Blueprint statements:
+
+- The Blueprint requires review of Mobile Legends' current terms and anti-cheat rules before distributing an overlay or automated screen-analysis companion.
+- It states that Android technical permission does not automatically mean a feature is permitted by the game publisher.
+- Patch data and game mechanics are versioned.
+- The Blueprint does not specify the same general third-party data-rights and mandatory compliance-document requirements.
+
+Gap:
+
+The Blueprint does not explicitly define the complete v1.0.0 data-rights review and compliance-document requirements.
+
+Decision required:
+
+Keep the Blueprint's stated policy-review requirement. Decide explicitly whether additional data-rights and compliance-document gates are required; do not import them automatically from v1.0.0.
+
+Recorded decision: Adopt data-rights review as a release gate for M2 and M4. Nothing in M2 or M4 ships until the applicable data-rights review and written-authorization gates have passed. Applicable policy review remains required.
+
+Status: Resolved. Release gates recorded in Section 9.1.
+
+11.34 Product-Level Reliability and Delivery Requirements
+
+v1.0.0 statements:
+
+The product-level Definition of Done requires, among other things:
+
+- Complete end-to-end workflows.
+- Local data surviving application restart.
+- Correct interrupted-session recovery.
+- Tested database migrations.
+- Documented export and deletion.
+- Invalid input not silently corrupting records.
+- Unit, integration, and UI tests.
+- Successful Android build and CI.
+- No unresolved critical or high-severity release-blocking defects.
+- Verified accessibility.
+- Accurate user and developer documentation.
+- Reproducible release builds.
+
+Blueprint statements:
+
+- M0 includes match session lifecycle and game database schema.
+- M2 includes local persistence.
+- The acceptance criteria include offline tracking, responsiveness, and engineering quality targets.
+- The Blueprint does not define the complete v1.0.0 reliability, accessibility, testing, documentation, and release-delivery checklist.
+
+Gap:
+
+The Blueprint does not explicitly include the full product-level reliability and delivery checklist from v1.0.0.
+
+Decision required:
+
+Use the Blueprint's milestones and acceptance criteria as the governing requirements. Decide explicitly whether any additional product-level verification requirements are needed; do not import the v1.0.0 checklist automatically.
+
+Recorded decision: Adopt the v1.0.0 product-level reliability and delivery requirements as Definition of Done constraints only. They supplement the Blueprint's milestone acceptance criteria and do not introduce additional product features. See Section 8.1.
+
+Status: Resolved.
+
+---
+
+12. Future / Requires Review
+
+The following items are retained for possible future review. They are not authorized product scope, do not alter the M0–M5 roadmap, and require explicit approval before becoming requirements.
+
+11.23 Tactical Analysis Output and Explanation Requirements
+
+v1.0.0 statements:
+
+Each analysis must provide:
+
+1. Situation.
+2. Evidence.
+3. Interpretation.
+4. Impact.
+5. Alternative.
+6. Confidence.
+7. Action.
+
+It also lists supported tactical situations such as objective contest timing, rotation timing, battle spell timing, deaths before objectives, engagement conditions, positioning observations, team-fight participation, and available information before a decision.
+
+Blueprint statements:
+
+- The intelligence engine includes tracking, inference and prediction.
+- The tactical decision engine combines validated events into tactical warnings and recommendations.
+- P2 includes engagement probability, team-fight analysis, and personalized tactical recommendations.
+- The Blueprint does not prescribe the seven-part analysis output format.
+
+Gap:
+
+The Blueprint does not specify the seven required analysis output fields or the full v1.0.0 list of tactical analysis situations as a separate output contract.
+
+Decision required:
+
+Keep the Blueprint's stated intelligence modules, priorities, and milestone scope. Decide explicitly whether a standardized analysis output contract is required; do not import the seven-part format or additional analysis requirements by default.
+
+Status: Future / Requires Review. Not authorized scope.
+
+11.25 Cross-Match Pattern Analysis
+
+v1.0.0 statements:
+
+- Compare reviewed matches to identify repeated mistakes and strengths.
+- Identify patterns such as repeated deaths before objectives, late rotations, poor objective preparation, spell-timing problems, unfavorable engagements, and recurring positioning problems.
+- Require multiple observations, included matches, supporting events, limitations, confidence, and suggested improvement.
+- A single event must not be presented as a recurring behavioral pattern.
+
+Blueprint statements:
+
+- The intelligence engine includes analytics and post-match reports.
+- P2 includes personalized tactical recommendations and team-fight analysis.
+- The M0–M5 roadmap does not define a separate cross-match pattern-analysis milestone or the v1.0.0 pattern evidence requirements.
+
+Gap:
+
+The Blueprint does not specify the cross-match pattern-analysis capability and its detailed evidence requirements as described in v1.0.0.
+
+Decision required:
+
+Do not add cross-match pattern analysis as a separate commitment from v1.0.0. Decide explicitly whether it belongs in a future approved scope, subject to the event-log and milestone Scope Guard.
+
+Status: Future / Requires Review. Not authorized scope.
+
+11.26 Improvement and Coaching Workflow
+
+v1.0.0 statements:
+
+- Provide prioritized improvement opportunities and specific practice recommendations.
+- Track progress and compare earlier and later reviewed matches.
+- Recognize improved behavior and reassess previous weaknesses.
+- Provide measurable practice objectives.
+
+Blueprint statements:
+
+- The product includes a Decision Support module.
+- P2 includes personalized tactical recommendations.
+- The Blueprint does not define a separate improvement-coaching workflow, practice-objective tracking, or reassessment cycle.
+
+Gap:
+
+The Blueprint does not specify the complete v1.0.0 improvement and coaching workflow or its progress-tracking requirements.
+
+Decision required:
+
+Keep the Blueprint's Decision Support and P2 scope as written. Decide separately whether the broader coaching workflow is needed; do not import it from v1.0.0.
+
+Status: Future / Requires Review. Not authorized scope.
+
+11.27 Complete Match Review and Learning Journey
+
+v1.0.0 statement:
+
+The main user journey has eight steps: Prepare, Record, Review, Analyze, Understand, Improve, Compare, and Reassess. It identifies the complete learning loop as the primary success criterion.
+
+Blueprint statements:
+
+- The Blueprint defines Android live companion and desktop replay and analytics experiences.
+- It specifies match session management, event processing, replay ingestion, timelines, reports, and tactical intelligence.
+- It does not define the same eight-step user journey or designate that complete learning loop as its primary success criterion.
+
+Gap:
+
+The Blueprint does not specify the eight-step user journey as a required end-to-end workflow.
+
+Decision required:
+
+Retain the Blueprint's user-facing workflows and milestone deliverables. Decide explicitly whether an additional end-to-end learning journey is required; do not add it automatically.
+
+Status: Future / Requires Review. Not authorized scope.
+
+11.32 Success Metrics
+
+v1.0.0 statements:
+
+Product metrics include:
+
+- Percentage of reviewed matches with complete enough evidence for analysis.
+- Percentage of supported analyses with traceable evidence.
+- Number of recurring patterns supported by multiple matches.
+- Percentage of recommendations with measurable practice objectives.
+- Player ability to explain why an identified situation mattered.
+- Progress on previously identified improvement objectives.
+- Data correction and analysis rejection rates.
+- Reliability of match records and persistence.
+
+It also distinguishes product-value metrics from project activity metrics.
+
+Blueprint statements:
+
+The Blueprint defines intelligence quality metrics for detection precision, detection recall, event latency, cooldown error, position error, prediction calibration, battery usage, and FPS impact.
+
+Gap:
+
+The Blueprint's engineering and intelligence metrics do not include the full set of product-outcome metrics specified in v1.0.0.
+
+Decision required:
+
+Keep the Blueprint's stated metrics authoritative. Decide explicitly whether additional product-outcome metrics are needed; do not add the v1.0.0 metrics automatically.
+
+Status: Future / Requires Review. Not authorized scope.
+
+12.1 Future Release Grouping Reference
+
+The following v1.0.0 release labels are retained only as possible future grouping references:
+
+- Release 1 — Functional Match Review Foundation.
+- Release 2 — Tactical Intelligence.
+- Release 3 — Cross-Match Intelligence.
+- Release 4 — Personal Improvement System.
+
+These labels do not replace M0–M5, authorize their listed deliverables, or establish a release commitment.
+
+---
+
+13. Change Log
+
+This change log records the differences between PRODUCT_PLAN_V.1.1.0_DRAFT and PRODUCT_PLAN_V.1.1.0_LOCKED_SOT.
+
+1. Document identity and status
+   
+   - Changed the document title from "PRODUCT_PLAN_V.1.1.0_DRAFT" to "PRODUCT_PLAN_V.1.1.0_LOCKED_SOT".
+   - Set version to 1.1.0.
+   - Changed status from Draft — pending review to LOCKED.
+   - Added date: 2026-11-12.
+   - Added the Current Milestone line using the product owner's exact confirmed wording.
+
+2. Source hierarchy
+   
+   - Replaced the draft's Blueprint-first hierarchy with the locked document and explicit product-owner decisions as the single source of truth.
+   - Retained the Blueprint as the underlying reference, subject to explicitly recorded decisions.
+   - Retained v1.0.0 as complementary only, with only explicitly adopted constraints applying.
+   - Retained the vision document as context only.
+
+3. First-release platform
+   
+   - Recorded Android as the only first-release platform.
+   - Recorded that desktop development begins at M3.
+   - Kept the cross-platform direction and shared intelligence/event-contract architecture.
+
+4. M2 and M4 acquisition boundaries
+   
+   - Restricted M2 to manual and event-driven updates.
+   - Recorded that automatic recognition begins in M4.
+   - Added written-authorization and data-rights release gates for M2 and M4.
+   - Recorded that nothing in M2 or M4 ships until both applicable gates pass.
+
+5. Desktop live capture and optional services
+   
+   - Excluded desktop live screen capture from the first release.
+   - Excluded WebSocket synchronization from the first release.
+   - Excluded FastAPI cloud services from the first release.
+   - Retained the existing architecture references to these technologies and capabilities without authorizing them for the first release.
+
+6. M5 dependency and floating interface
+   
+   - Blocked M5 until M4 meets its applicable acceptance targets.
+   - Clarified that the floating interface is information-only.
+
+7. Persistence technology — explicit Blueprint deviation
+   
+   - Replaced "SQLite + SQLDelight" with "SQLite + Room" for local persistence.
+   - Adopted the repository's existing Room-based work as the baseline.
+   - This is an explicit product-owner override of the Blueprint's persistence selection for this item only.
+   - No other Blueprint technology decision was changed.
+
+8. Roadmap
+   
+   - Retained M0–M5 as the governing development roadmap.
+   - Recorded Releases 1–4 as future grouping only.
+   - Did not import release deliverables into M0–M5.
+
+9. M0 status
+   
+   - Recorded: "M0 status unverified; Sprint 0 complete; M1 not started."
+   - Explicitly prohibited marking M0 complete until all M0 acceptance criteria are verified with evidence.
+
+10. Adopted constraints
+    
+    - Adopted v1.0.0 Definition of Done requirements as constraints only.
+    - Adopted v1.0.0 privacy and data-control rules as constraints only.
+    - Adopted v1.0.0 governance and approval gates as constraints only.
+    - Adopted the "unavailable, not guessed" cooldown rule as a data-integrity constraint.
+    - These adoptions do not authorize additional product features or replace the Blueprint's milestone scope and acceptance criteria.
+
+11. Open Questions disposition
+    
+    - Recorded decisions and status for 11.1–11.5, 11.11, 11.13–11.18, 11.20, 11.24, 11.28, 11.30, 11.31, 11.33, and 11.34.
+    - Marked 11.6–11.10, 11.12, 11.19, 11.21, 11.22, and 11.29 as Deferred to M0 spec work, retaining their original question text.
+    - Moved 11.23, 11.25, 11.26, 11.27, and 11.32 into Future / Requires Review, retaining their original question text.
+    - Added the future-only Releases 1–4 grouping reference.
+    - Preserved unresolved details as unresolved rather than assuming they had been decided.
+
+12. Scope and governance
+    
+    - Updated Scope Guard authority to reflect the locked source hierarchy.
+    - Added the adopted project approval and delivery constraints.
+    - Preserved the existing product boundaries, priority categories, and M0–M5 milestone structure except for the explicit decisions recorded above.
+
+---
+
+End of PRODUCT_PLAN_V.1.1.0_LOCKED_SOT
+
+Changes to this document require a new version number and my explicit approval.
