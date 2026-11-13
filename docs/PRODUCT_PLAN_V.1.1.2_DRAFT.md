@@ -1,4 +1,4 @@
-PRODUCT_PLAN_V.1.1.1_LOCKED_SOT
+PRODUCT_PLAN_V.1.1.2_DRAFT
 
 Product: Mobile Legends Intelligence Platform (MIP)
 Reference: Mobile Legends Intelligence System: Technical Architecture & MVP Blueprint v1.0
