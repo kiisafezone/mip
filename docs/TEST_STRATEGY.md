@@ -1,5 +1,7 @@
 # Test Strategy
 
+> **Current authority notice (2026-11-13):** This document is a legacy H1 test-strategy reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
+
 **Current test scope:** H1 — Capture  
 **Execution authority:** [root PLAN.md](../PLAN.md)
 
