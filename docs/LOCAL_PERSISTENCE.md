@@ -1,5 +1,7 @@
 # Local-First Session Persistence Design
 
+> **Current authority notice (2026-11-13):** This document is a current Android Room persistence reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
+
 **Status:** H1 Room implementation baseline; verification and generated-schema review remain release checks.
 
 ## 1. Requirements and boundaries
@@ -67,8 +69,13 @@ The UI must warn that this deletion is permanent and local.
 - Do not deploy a production database until the first Room migration and schema
   export are reviewed.
 
-Proposed initial DDL is in data/local/schema/001_initial.sql. It is a design
-artifact, not yet wired to a Room database.
+The readable SQL companion is in `data/local/schema/001_initial.sql`.
+Room entities, DAOs, the database, and `RoomMatchRepository` are implemented
+in `data:local`. The generated Room v1 schema is committed under
+`data/local/schemas/com.kiisafezone.mip.data.local.MipDatabase/1.json`.
+The Room instrumentation/schema evidence is recorded in the WP2/WP8 entries
+of `REVIEW.md`; the earlier statement that the SQL was not wired to Room is
+superseded and factually stale.
 
 ## 4. Repository and mapping
 
@@ -87,6 +94,14 @@ database transactions. Event reads must explicitly order by
 gameTimeMs ASC, recordedAtEpochMs ASC, id ASC.
 
 ## 5. Active-session recovery after process death
+
+The behavior below is a persistence/recovery design requirement, not evidence
+that the current application implements the full lifecycle or recovery flow.
+M0 lifecycle acceptance is governed by v1.1.1 and remains subject to the
+unresolved specifications and measurable checks in decision 11.40. Do not
+treat the legacy H1 design text as an independent authorization to expand
+the current milestone scope.
+
 
 - Persist session status and each event immediately (or in a short bounded
   transaction); do not rely on in-memory state as the source of truth.
@@ -111,10 +126,10 @@ gameTimeMs ASC, recordedAtEpochMs ASC, id ASC.
 
 ## 7. H1 implementation and release checks
 
-Room entities, DAOs, database, repository adapter, and initial persistence
-instrumentation tests are implemented in `data:local`. Before treating H1
-persistence as complete, run the configured Gradle/CI checks, inspect and commit
-the generated Room schema JSON under `data/local/schemas`, and review the
-initial SQL companion against the generated schema. Any future schema change
-must increment the database version and include an explicit tested migration;
-destructive fallback remains disabled.
+Room entities, DAOs, database, repository adapter, generated Room v1 schema,
+and persistence instrumentation tests are present in `data:local`. WP2/WP8
+records the generated schema inspection and successful instrumentation CI
+evidence. This verifies the initial persistence package only; it does not prove
+all M0 lifecycle, recovery, migration, or product acceptance requirements.
+Any future schema change must increment the database version and include an
+explicit tested migration; destructive fallback remains disabled.
