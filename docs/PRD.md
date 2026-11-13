@@ -4,8 +4,8 @@
 
 **Product:** MIP — Mobile Legends Intelligence Platform  
 **Document scope:** H1 — Capture  
-**Status:** H1 implementation and validation in progress  
-**Execution authority:** [root PLAN.md](../PLAN.md)
+**Historical status snapshot:** H1 implementation and validation in progress; not the current milestone status  
+**Current product authority:** [locked v1.1.1 plan](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md)
 
 ## 1. Objective
 
