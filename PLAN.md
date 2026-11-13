@@ -1,3 +1,7 @@
+> **Authority notice (2026-11-13):** This H1 execution plan is retained for historical traceability. It is not the current product-plan authority and must not be used to authorize work or override the M0–M5 roadmap. The approved source of truth is [`docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md`](docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains: M0 status unverified; Sprint 0 complete; M1 not started. Preserve this document's historical H1 criteria without treating its H1 status as current milestone authorization.
+
+---
+
 # MIP — Execution Plan
 
 **Status:** H1 capture validation — approved execution baseline  

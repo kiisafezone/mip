@@ -2,7 +2,7 @@
 
 **Status:** Active engineering guardrail; not legal advice.  
 **Authorization status:** No written Moonton authorization is currently recorded in this repository.  
-**Last reviewed:** 2026-11-11
+**Last reviewed:** 2026-11-13 (milestone mapping updated; existing restrictions retained)
 
 ## Purpose and independence
 
@@ -32,11 +32,47 @@ distribution model, and data category:
 - Do not claim that Moonton has approved, partnered with, or endorsed MIP without
   verifiable written evidence supporting that exact claim.
 
+## Milestone-specific interpretation under product plan v1.1.1
+
+This policy remains an active engineering guardrail. The following mapping clarifies
+how its existing restrictions relate to the M0–M5 roadmap; it does not weaken any
+restriction or resolve a pending product-owner decision.
+
+- **M2 — Android Companion:** v1.1.1 limits M2 updates to manual and event-driven
+  methods, places automatic recognition in M4, and blocks M2 release pending its
+  written-authorization and data-rights gates. Proposed decision 11.37 about the
+  purpose of M2 screen capture remains pending. Do not treat the proposed
+  capture-session-only interpretation as approved authorization or assume
+  additional capture uses (including frame display or image analysis) are
+  authorized. Automatic recognition remains M4 scope, not M2.
+- **M3 — Desktop Analysis:** proposed decision 11.36 leaves the replay-ingestion
+  boundary and applicability of the Section 9.1 release gates unresolved.
+  Do not infer that the M2/M4 gates automatically apply to M3, and do not infer
+  that M3 is exempt. Before using third-party recordings, complete the applicable
+  source, terms, rights, privacy, and platform review. Automatic OCR/object
+  detection/event recognition from replay video remains M4 scope, not M3.
+- **M4 — Computer Vision:** automatic recognition begins in M4. M4 release remains
+  blocked until the written-authorization and data-rights gates in v1.1.1 and
+  this policy are satisfied for the exact method, purpose, data, platform, and
+  distribution model.
+
+The general restrictions above continue to apply unless exact written evidence
+and an explicit, dated maintainer decision establish a permitted exception.
+Decisions 11.35–11.40 remain open; this mapping records their current status,
+not a resolution.
+
 ## MVP feature and data-source inventory
 
-The MVP is intentionally usable without connecting to, observing, or controlling
-the running game. The following is the approved engineering scope under this
-policy; it is not a statement of publisher endorsement.
+The inventory below classifies acquisition methods and policy boundaries; it is
+not a current milestone scope list or implementation authorization. In
+particular, the cooldown-estimate row does not authorize cooldown behavior:
+pending decision 11.38 and the applicable milestone scope remain controlling.
+
+The product is designed to remain usable without connecting to, observing, or
+controlling the running game. The following table classifies acquisition and
+policy boundaries for previously documented feature concepts; it does not
+declare those features to be in current milestone scope or authorize their
+implementation.
 
 | MVP feature | Initial acquisition method | Source classification | Boundary |
 |---|---|---|---|

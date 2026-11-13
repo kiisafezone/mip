@@ -1,9 +1,11 @@
 # Product Requirements Document (PRD)
 
+> **Current authority notice (2026-11-13):** This document is a legacy H1 product-requirements reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
+
 **Product:** MIP — Mobile Legends Intelligence Platform  
 **Document scope:** H1 — Capture  
-**Status:** H1 implementation and validation in progress  
-**Execution authority:** [root PLAN.md](../PLAN.md)
+**Historical status snapshot:** H1 implementation and validation in progress; not the current milestone status  
+**Current product authority:** [locked v1.1.1 plan](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md)
 
 ## 1. Objective
 
@@ -60,10 +62,12 @@ a server.
 - **FR-09 — Evidence labeling:** distinguish player-entered information from
   derived information; H1 must not produce tactical verdicts or coaching.
 
-Session lifecycle transition controls (pause, resume, and complete) are not
-included in the root `PLAN.md` H1 “Build only” scope. Their implementation is
-deferred pending a maintainer decision; their presence in earlier draft
-requirements does not independently authorize H1 scope expansion.
+Session lifecycle transition controls (pause, resume, and complete) were not
+included in the historical H1 “Build only” scope. That H1-specific exclusion
+does not waive the separate M0 match-session lifecycle deliverable in v1.1.1.
+M0 lifecycle acceptance remains unverified; its semantics and measurable checks
+must be resolved through the governing plan and decision 11.40 before any
+implementation is inferred or authorized.
 
 ## 5. Non-functional requirements
 

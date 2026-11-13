@@ -1,9 +1,11 @@
 # Technical Requirements Document (TRD)
 
+> **Current authority notice (2026-11-13):** This document is a current-repository technical reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
+
 **Document scope:** H1 — Capture  
-**Status:** Current implementation reference; technical decisions remain subject
-to the root execution plan  
-**Execution authority:** [root PLAN.md](../PLAN.md)
+**Status:** Current repository implementation reference; product scope and milestone
+decisions are governed by v1.1.1  
+**Current product authority:** [locked v1.1.1 plan](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md)
 
 ## 1. Technology in the current repository
 
@@ -20,13 +22,13 @@ The current implementation uses:
   Room persistence.
 - GitHub Actions with the repository's configured JDK and Android SDK.
 
-The root `PLAN.md` contains an explicit technical decision checkpoint:
-compare retaining the existing Kotlin Multiplatform modules with a simpler
-Android-only structure using delivery effort, testability, and migration cost.
-That decision is not recorded as complete by this document. Do not treat the
-existing module layout as proof that KMP is necessary or as authorization to
-expand shared modules. Record the evidence-backed decision before expanding
-the architecture.
+The historical root `PLAN.md` contains an earlier KMP-versus-Android-only
+checkpoint; it is not the current architecture authority. v1.1.1 specifies
+Kotlin Multiplatform as the shared-intelligence technology baseline. Decision
+11.39 defers specification/investigation of desktop persistence, how the Tauri
+application consumes the shared Kotlin core, and whether event contracts are
+shared as code or schema. It does not authorize a bridge, a new persistence
+technology, or an architecture change.
 
 ## 2. Current module responsibilities
 
@@ -64,10 +66,12 @@ The model validates non-negative start/end timestamps, end time not preceding
 start time, positive schema version, nonblank optional metadata, non-negative
 duration, and consistency between COMPLETED status and end timestamp.
 
-The presence of lifecycle status values does not make pause/resume/complete
-transition controls an H1 requirement. Those methods and associated UI actions
-remain deferred pending maintainer decision because they are outside the root
-`PLAN.md` H1 “Build only” list.
+The presence of lifecycle status values does not prove that pause/resume/complete
+transitions work. Those controls were outside the historical H1 “Build only”
+list, but v1.1.1 separately includes match-session lifecycle in M0. That M0
+deliverable remains unverified; do not treat the H1 exclusion as a waiver or
+infer transition semantics before the relevant specifications and measurable
+checks are resolved.
 
 ### MatchEvent
 
@@ -152,6 +156,8 @@ and Android checks include:
 
 Room instrumentation tests must cover persistence round trips, deterministic
 ordering, correction transaction/history, deletion, and cascade behavior as
-applicable to the current implementation. Do not claim H1 is complete merely
-because a build or an individual CI job passes; use the root `PLAN.md` DoD and
-participant validation gate.
+applicable to the current implementation. CI success is engineering evidence,
+not M0 completion. The root `PLAN.md` H1 DoD and participant protocol are
+historical H1 references only; current milestone acceptance is governed by
+v1.1.1, including the M0 specification/evidence requirements and decision
+11.40.

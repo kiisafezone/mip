@@ -1,5 +1,9 @@
 # Data Dictionary
 
+> **Current authority notice (2026-11-13):** This document is a current schema/data-field reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
+
+> **Scope note:** This dictionary describes fields and contracts present in the current repository. It is not proof that the complete M0 game database schema or every milestone data contract is finished. Cooldown-related fields do not settle pending decision 11.38 or authorize cooldown behavior. Validate milestone requirements against v1.1.1 before implementation.
+
 ## MatchSession
 
 | Field | Type | Meaning | Constraint |

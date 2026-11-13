@@ -1,7 +1,9 @@
 # Test Strategy
 
-**Current test scope:** H1 — Capture  
-**Execution authority:** [root PLAN.md](../PLAN.md)
+> **Current authority notice (2026-11-13):** This document is a legacy H1 test-strategy reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
+
+**Historical test scope:** H1 — Capture  
+**Current product authority:** [locked v1.1.1 plan](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md)
 
 ## Test pyramid
 
@@ -61,10 +63,12 @@
 
 ## Deferred or separately gated tests
 
-- Pause/resume/complete lifecycle transition behavior is not an H1 “Build only”
-  requirement in the root `PLAN.md`. Keep transition-method tests deferred
-  until a maintainer explicitly decides whether lifecycle controls belong in
-  H1.
+- Pause/resume/complete lifecycle transition behavior was not part of the
+  historical H1 “Build only” test scope. This does not waive the separate M0
+  match-session lifecycle deliverable in v1.1.1. M0 transition semantics and
+  measurable acceptance checks remain subject to the unresolved specifications
+  and decision 11.40; do not infer or implement them from this legacy H1 test
+  plan alone.
 - Cooldown calculations, tactical verdicts, coaching recommendations,
   cross-match patterns, and behavior-change outcomes are not H1 tests. They
   require their own later-stage authorization and evaluation design.
