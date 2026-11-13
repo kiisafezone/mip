@@ -42,8 +42,9 @@ restriction or resolve a pending product-owner decision.
   methods, places automatic recognition in M4, and blocks M2 release pending its
   written-authorization and data-rights gates. Proposed decision 11.37 about the
   purpose of M2 screen capture remains pending. Do not treat the proposed
-  capture-session-only interpretation as approved authorization, and do not
-  implement frame display, image analysis, OCR, or recognition in M2.
+  capture-session-only interpretation as approved authorization or assume
+  additional capture uses (including frame display or image analysis) are
+  authorized. Automatic recognition remains M4 scope, not M2.
 - **M3 — Desktop Analysis:** proposed decision 11.36 leaves the replay-ingestion
   boundary and applicability of the Section 9.1 release gates unresolved.
   Do not infer that the M2/M4 gates automatically apply to M3, and do not infer
@@ -67,9 +68,11 @@ not a current milestone scope list or implementation authorization. In
 particular, the cooldown-estimate row does not authorize cooldown behavior:
 pending decision 11.38 and the applicable milestone scope remain controlling.
 
-The MVP is intentionally usable without connecting to, observing, or controlling
-the running game. The following is the approved engineering scope under this
-policy; it is not a statement of publisher endorsement.
+The product is designed to remain usable without connecting to, observing, or
+controlling the running game. The following table classifies acquisition and
+policy boundaries for previously documented feature concepts; it does not
+declare those features to be in current milestone scope or authorize their
+implementation.
 
 | MVP feature | Initial acquisition method | Source classification | Boundary |
 |---|---|---|---|
