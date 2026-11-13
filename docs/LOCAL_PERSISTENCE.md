@@ -2,7 +2,7 @@
 
 > **Current authority notice (2026-11-13):** This document is a current Android Room persistence reference retained to describe the existing repository and its historical H1 work. It is not an independent product-scope, milestone, or implementation authority. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. Where this document's older H1 framing conflicts with v1.1.1, v1.1.1 controls. This notice preserves the document's useful technical/history content; it does not resolve open decisions 11.35–11.40 or authorize work.
 
-**Status:** H1 Room implementation baseline; verification and generated-schema review remain release checks.
+**Status:** Room v1 implementation, generated schema, and WP2 instrumentation evidence are present; broader milestone acceptance remains separate.
 
 ## 1. Requirements and boundaries
 
