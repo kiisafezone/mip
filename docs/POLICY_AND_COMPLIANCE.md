@@ -2,7 +2,7 @@
 
 **Status:** Active engineering guardrail; not legal advice.  
 **Authorization status:** No written Moonton authorization is currently recorded in this repository.  
-**Last reviewed:** 2026-11-11
+**Last reviewed:** 2026-11-13 (milestone mapping updated; existing restrictions retained)
 
 ## Purpose and independence
 
@@ -61,6 +61,11 @@ Decisions 11.35–11.40 remain open; this mapping records their current status,
 not a resolution.
 
 ## MVP feature and data-source inventory
+
+The inventory below classifies acquisition methods and policy boundaries; it is
+not a current milestone scope list or implementation authorization. In
+particular, the cooldown-estimate row does not authorize cooldown behavior:
+pending decision 11.38 and the applicable milestone scope remain controlling.
 
 The MVP is intentionally usable without connecting to, observing, or controlling
 the running game. The following is the approved engineering scope under this
