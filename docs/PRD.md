@@ -62,10 +62,12 @@ a server.
 - **FR-09 — Evidence labeling:** distinguish player-entered information from
   derived information; H1 must not produce tactical verdicts or coaching.
 
-Session lifecycle transition controls (pause, resume, and complete) are not
-included in the root `PLAN.md` H1 “Build only” scope. Their implementation is
-deferred pending a maintainer decision; their presence in earlier draft
-requirements does not independently authorize H1 scope expansion.
+Session lifecycle transition controls (pause, resume, and complete) were not
+included in the historical H1 “Build only” scope. That H1-specific exclusion
+does not waive the separate M0 match-session lifecycle deliverable in v1.1.1.
+M0 lifecycle acceptance remains unverified; its semantics and measurable checks
+must be resolved through the governing plan and decision 11.40 before any
+implementation is inferred or authorized.
 
 ## 5. Non-functional requirements
 
