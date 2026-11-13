@@ -5,7 +5,7 @@
 **Document scope:** H1 — Capture  
 **Status:** Current implementation reference; technical decisions remain subject
 to the root execution plan  
-**Execution authority:** [root PLAN.md](../PLAN.md)
+**Current product authority:** [locked v1.1.1 plan](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md)
 
 ## 1. Technology in the current repository
 
