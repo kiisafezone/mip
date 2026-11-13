@@ -63,10 +63,12 @@
 
 ## Deferred or separately gated tests
 
-- Pause/resume/complete lifecycle transition behavior is not an H1 “Build only”
-  requirement in the root `PLAN.md`. Keep transition-method tests deferred
-  until a maintainer explicitly decides whether lifecycle controls belong in
-  H1.
+- Pause/resume/complete lifecycle transition behavior was not part of the
+  historical H1 “Build only” test scope. This does not waive the separate M0
+  match-session lifecycle deliverable in v1.1.1. M0 transition semantics and
+  measurable acceptance checks remain subject to the unresolved specifications
+  and decision 11.40; do not infer or implement them from this legacy H1 test
+  plan alone.
 - Cooldown calculations, tactical verdicts, coaching recommendations,
   cross-match patterns, and behavior-change outcomes are not H1 tests. They
   require their own later-stage authorization and evaluation design.
