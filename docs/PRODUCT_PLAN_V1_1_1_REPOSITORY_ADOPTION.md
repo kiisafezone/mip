@@ -52,7 +52,7 @@ reconciliation:
 | `docs/POLICY_AND_COMPLIANCE.md` | Retained as an active guardrail and mapped to M2/M3/M4 without weakening restrictions or deciding pending 11.36/11.37. |
 | `docs/DATA_DICTIONARY.md` | Clarified as a repository schema reference, not proof of complete M0 game-data contracts; cooldown decision 11.38 remains open. |
 | `docs/LOCAL_PERSISTENCE.md` | Corrected the stale claim that SQL is not wired to Room; records the implemented Room adapter, committed schema, and WP2/WP8 evidence while keeping lifecycle/recovery claims distinct from proof. |
-| `docs/ARCHITECTURE.md` | Clarified as current repository architecture; KMP is not declared permanently selected and desktop/shared-core investigation remains deferred under 11.39. |
+| `docs/ARCHITECTURE.md` | Clarified as current repository architecture; the existing KMP modules align with the v1.1.1 shared-intelligence baseline, while desktop persistence and Tauri/shared-core consumption details remain deferred under 11.39. |
 | `REVIEW.md` | Preserved as historical work-package evidence; WP2 completion and outstanding session-metadata revision history are distinguished. |
 
 The existing notices in `PLAN.md`, `BUILD_PLAN.md`, `docs/PRODUCT_PLAN.md`,
