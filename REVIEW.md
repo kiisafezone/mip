@@ -1,5 +1,7 @@
 # MIP H1 Implementation Review Log
 
+> **Historical evidence notice (2026-11-13):** This is an implementation work-package log for the earlier H1 build. It is not the current product-plan, milestone, or implementation authority; [PRODUCT_PLAN v1.1.1](docs/PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md) governs. Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. WP2 Room schema generation/inspection and instrumentation verification are completed in the later WP8 entry; earlier WP2 pending statements are historical snapshots. Session-metadata revision history remains outstanding: event-correction revisions do not satisfy that separate requirement. The blank work-package decision checkboxes remain review records, not approvals. This notice does not authorize implementation or alter any package decision.
+
 This file records implementation work package by package. It does not replace maintainer review, H1 participant validation, or the phase gate in `PLAN.md`.
 
 ## Work package 1 — Domain model and event correction contract
