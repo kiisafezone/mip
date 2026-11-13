@@ -28,6 +28,7 @@ Base commit: 904f1326d5410f206181d6087e0e8052b53205f2
 - Reviewed the locked v1.1.1 sections 11.6–11.10 and relevant roadmap, event, data, policy, and test documentation.
 - Reviewed current MatchEvent domain/contract representation, event payload validation, current event type registry, and cooldown game-data fixture.
 - Prepared a v1.1.2 draft with requirement, proposed specification, current-repository alignment, assumptions, and open questions for each of 11.6–11.10.
+- Corrected the draft document title; the approved v1.1.1 source document remains unchanged.
 - No implementation code modified.
 
 ## Remaining
@@ -52,6 +53,7 @@ Wait for the product owner's answers to the Phase 1 questions. Do not start Phas
 ## Evidence
 
 - Base commit: 904f1326d5410f206181d6087e0e8052b53205f2
-- Draft commit: 2098066df290046b51992e95777885dadc8b0f2d
+- Initial draft commit: 2098066df290046b51992e95777885dadc8b0f2d
+- Draft title correction commit: 0b9948e0bc2cc3dfd6e237e5300bb511147082b5
 - Draft path: `docs/PRODUCT_PLAN_V.1.1.2_DRAFT.md`
 - Startup file check: `PROGRESS.md` and `CLAUDE.md` absent on main at session start.
