@@ -1,6 +1,6 @@
 # MIP architecture
 
-> **Authority notice (2026-11-13):** This file describes the architecture currently present in the repository; it is not the complete target architecture or an independent authorization to implement future milestones. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. The repository's Kotlin Multiplatform modules are current implementation facts, not a settled decision that KMP must be retained. Desktop persistence and shared-core integration remain deferred specification/investigation under decision 11.39. No desktop implementation or technology change is authorized by this document.
+> **Authority notice (2026-11-13):** This file describes the architecture currently present in the repository; it is not the complete target architecture or an independent authorization to implement future milestones. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. The repository's Kotlin Multiplatform modules align with the v1.1.1 shared-intelligence technology baseline. Decision 11.39 defers specification/investigation of desktop persistence, how the Tauri application consumes the shared Kotlin core, and whether event contracts are shared as code or schema. It does not authorize a bridge, a new persistence technology, or a technology change. No desktop implementation is authorized by this document.
 
 ## Module map
 
