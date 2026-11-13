@@ -156,6 +156,8 @@ and Android checks include:
 
 Room instrumentation tests must cover persistence round trips, deterministic
 ordering, correction transaction/history, deletion, and cascade behavior as
-applicable to the current implementation. Do not claim H1 is complete merely
-because a build or an individual CI job passes; use the root `PLAN.md` DoD and
-participant validation gate.
+applicable to the current implementation. CI success is engineering evidence,
+not M0 completion. The root `PLAN.md` H1 DoD and participant protocol are
+historical H1 references only; current milestone acceptance is governed by
+v1.1.1, including the M0 specification/evidence requirements and decision
+11.40.
