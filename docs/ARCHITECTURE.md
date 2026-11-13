@@ -1,5 +1,7 @@
 # MIP architecture
 
+> **Authority notice (2026-11-13):** This file describes the architecture currently present in the repository; it is not the complete target architecture or an independent authorization to implement future milestones. The approved source of truth is [PRODUCT_PLAN v1.1.1](PRODUCT_PLAN_V.1.1.1_LOCKED_SOT.md). Current status remains **M0 unverified; Sprint 0 complete; M1 not started**. The repository's Kotlin Multiplatform modules are current implementation facts, not a settled decision that KMP must be retained. Desktop persistence and shared-core integration remain deferred specification/investigation under decision 11.39. No desktop implementation or technology change is authorized by this document.
+
 ## Module map
 
 MIP keeps product rules independent from Android APIs. Android is the first host,
